@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "id": "web-product-team",
+  "name_ru": "Команда веб-продукта",
+  "execution_mode": "not_connected",
+  "members": [
+    {
+      "profile_id": "agents-orchestrator",
+      "display_name_ru": "Координатор"
+    },
+    {
+      "profile_id": "project-management-project-shepherd",
+      "display_name_ru": "Руководитель проекта"
+    },
+    {
+      "profile_id": "design-ux-researcher",
+      "display_name_ru": "UX-исследователь"
+    },
+    {
+      "profile_id": "design-ui-designer",
+      "display_name_ru": "Дизайнер интерфейса"
+    },
+    {
+      "profile_id": "engineering-frontend-developer",
+      "display_name_ru": "Frontend-разработчик"
+    },
+    {
+      "profile_id": "engineering-backend-architect",
+      "display_name_ru": "Backend-архитектор"
+    },
+    {
+      "profile_id": "testing-api-tester",
+      "display_name_ru": "Тестировщик API"
+    },
+    {
+      "profile_id": "testing-reality-checker",
+      "display_name_ru": "Проверка готовности"
+    }
+  ]
+}

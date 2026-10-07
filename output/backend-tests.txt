@@ -1,0 +1,62 @@
+test_api_create_project_task_custom_stage_material_download_and_preferences (test_office.ApiCase.test_api_create_project_task_custom_stage_material_download_and_preferences) ... Executing <Task finished name='Task-1' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_bulk_team_api_requires_empty_body_and_keeps_demo_team_workflow (test_office.ApiCase.test_bulk_team_api_requires_empty_body_and_keeps_demo_team_workflow) ... Executing <Task finished name='Task-29' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_catalog_and_each_profile_expose_russian_descriptions_preserving_originals (test_office.ApiCase.test_catalog_and_each_profile_expose_russian_descriptions_preserving_originals) ... Executing <Task finished name='Task-49' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_catalog_invalid_json_oversize_and_duplicate_import_are_rejected (test_office.ApiCase.test_catalog_invalid_json_oversize_and_duplicate_import_are_rejected) ... Executing <Task finished name='Task-54' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_health_catalog_state_and_profile_contract (test_office.ApiCase.test_health_catalog_state_and_profile_contract) ... Executing <Task finished name='Task-68' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_local_host_origin_and_json_boundary_protect_mutations (test_office.ApiCase.test_local_host_origin_and_json_boundary_protect_mutations) ... Executing <Task finished name='Task-73' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.266 seconds
+ok
+test_malformed_input_is_4xx_and_does_not_mutate (test_office.ApiCase.test_malformed_input_is_4xx_and_does_not_mutate) ... Executing <Task finished name='Task-78' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_secret_health_and_error_responses_do_not_expose_env_or_provider (test_office.ApiCase.test_secret_health_and_error_responses_do_not_expose_env_or_provider) ... Executing <Task finished name='Task-109' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.250 seconds
+ok
+test_sse_last_event_id_replay_deduplicates_and_has_identifiers (test_office.ApiCase.test_sse_last_event_id_replay_deduplicates_and_has_identifiers) ... Executing <Task finished name='Task-114' coro=<ApiCase.asyncSetUp() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:651> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.234 seconds
+ok
+test_active_member_removal_blocked_and_no_terminal_state_mutation (test_office.RuntimeCase.test_active_member_removal_blocked_and_no_terminal_state_mutation) ... ok
+test_actual_demo_adapter_marks_example_without_invented_usage (test_office.RuntimeCase.test_actual_demo_adapter_marks_example_without_invented_usage) ... ok
+test_auto_runs_to_final_approval_without_auto_approving (test_office.RuntimeCase.test_auto_runs_to_final_approval_without_auto_approving) ... ok
+test_auto_waits_for_concurrent_manual_step_instead_of_corrupting_run (test_office.RuntimeCase.test_auto_waits_for_concurrent_manual_step_instead_of_corrupting_run) ... ok
+test_cancel_retains_completed_materials_and_prevents_next_stage (test_office.RuntimeCase.test_cancel_retains_completed_materials_and_prevents_next_stage) ... ok
+test_confirm_autonomy_requires_explicit_approval_for_each_stage (test_office.RuntimeCase.test_confirm_autonomy_requires_explicit_approval_for_each_stage) ... ok
+test_cross_project_material_and_foreign_team_member_rejected (test_office.RuntimeCase.test_cross_project_material_and_foreign_team_member_rejected) ... ok
+test_default_task_stages_use_russian_member_labels_and_explicit_names_survive (test_office.RuntimeCase.test_default_task_stages_use_russian_member_labels_and_explicit_names_survive) ... ok
+test_inflight_cancel_preserves_output_and_reset_is_blocked (test_office.RuntimeCase.test_inflight_cancel_preserves_output_and_reset_is_blocked) ... ok
+test_manual_full_demo_revision_handoffs_outputs_and_owner_approval (test_office.RuntimeCase.test_manual_full_demo_revision_handoffs_outputs_and_owner_approval) ... Executing <Task finished name='Task-169' coro=<RuntimeCase.test_manual_full_demo_revision_handoffs_outputs_and_owner_approval() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:330> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.266 seconds
+ok
+test_missing_previous_permission_stops_handoff_reader (test_office.RuntimeCase.test_missing_previous_permission_stops_handoff_reader) ... ok
+test_mock_model_payload_selected_role_context_isolation_usage_and_no_secrets (test_office.RuntimeCase.test_mock_model_payload_selected_role_context_isolation_usage_and_no_secrets) ... ok
+test_model_errors_redirect_bad_json_and_network_are_safe (test_office.RuntimeCase.test_model_errors_redirect_bad_json_and_network_are_safe) ... Executing <Task finished name='Task-184' coro=<RuntimeCase.test_model_errors_redirect_bad_json_and_network_are_safe() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:616> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.156 seconds
+ok
+test_model_requires_secure_url_and_context_permission (test_office.RuntimeCase.test_model_requires_secure_url_and_context_permission) ... ok
+test_permissions_rechecked_before_call_and_after_inflight_revocation (test_office.RuntimeCase.test_permissions_rechecked_before_call_and_after_inflight_revocation) ... ok
+test_real_mode_never_falls_back_to_demo (test_office.RuntimeCase.test_real_mode_never_falls_back_to_demo) ... ok
+test_reject_final_adds_revision_then_reset_keeps_history_and_materials (test_office.RuntimeCase.test_reject_final_adds_revision_then_reset_keeps_history_and_materials) ... Executing <Task finished name='Task-205' coro=<RuntimeCase.test_reject_final_adds_revision_then_reset_keeps_history_and_materials() done, defined at C:\Users\oleg\Documents\Codex\2026-10-07\https-www-instagram-com-reel-dbzttxfnxjk\outputs\ai-office\tests\test_office.py:471> result=None created at C:\Users\oleg\AppData\Local\Programs\Python\Python311\Lib\asyncio\runners.py:100> took 0.125 seconds
+ok
+test_restart_interrupts_stage_and_disables_auto_without_provider_call (test_office.RuntimeCase.test_restart_interrupts_stage_and_disables_auto_without_provider_call) ... ok
+test_schedule_autonomy_datetime_validation_and_due_launch (test_office.RuntimeCase.test_schedule_autonomy_datetime_validation_and_due_launch) ... ok
+test_stage_names_validation_and_exact_order (test_office.RuntimeCase.test_stage_names_validation_and_exact_order) ... ok
+test_stage_result_and_events_roll_back_atomically_on_commit_failure (test_office.RuntimeCase.test_stage_result_and_events_roll_back_atomically_on_commit_failure) ... ok
+test_all_new_members_have_russian_defaults_and_custom_names_survive_updates (test_office.StoreCase.test_all_new_members_have_russian_defaults_and_custom_names_survive_updates) ... ok
+test_catalog_has_282_original_profiles_18_categories_and_matching_hashes (test_office.StoreCase.test_catalog_has_282_original_profiles_18_categories_and_matching_hashes) ... ok
+test_catalog_reimport_preserves_members_and_updates_profile_atomically (test_office.StoreCase.test_catalog_reimport_preserves_members_and_updates_profile_atomically) ... ok
+test_catalog_rejects_bad_schema_count_required_fields_and_categories (test_office.StoreCase.test_catalog_rejects_bad_schema_count_required_fields_and_categories) ... ok
+test_create_app_with_explicit_store_preserves_eight_member_starter (test_office.StoreCase.test_create_app_with_explicit_store_preserves_eight_member_starter) ... ok
+test_events_have_unique_identifiers_ordered_replay_and_project_isolation (test_office.StoreCase.test_events_have_unique_identifiers_ordered_replay_and_project_isolation) ... ok
+test_fresh_production_app_has_full_primary_team_and_restart_preserves_edits (test_office.StoreCase.test_fresh_production_app_has_full_primary_team_and_restart_preserves_edits) ... ok
+test_hierarchy_rejects_cycles_unknown_managers_and_clears_removed_links (test_office.StoreCase.test_hierarchy_rejects_cycles_unknown_managers_and_clears_removed_links) ... ok
+test_import_all_adds_282_unique_members_and_preserves_original_profiles_configs (test_office.StoreCase.test_import_all_adds_282_unique_members_and_preserves_original_profiles_configs) ... ok
+test_import_all_is_idempotent_project_isolated_and_restores_valid_coordinator (test_office.StoreCase.test_import_all_is_idempotent_project_isolated_and_restores_valid_coordinator) ... ok
+test_import_all_rolls_back_members_and_event_on_partial_failure (test_office.StoreCase.test_import_all_rolls_back_members_and_event_on_partial_failure) ... ok
+test_legacy_names_migrate_once_on_restart_preserving_custom_settings_and_events (test_office.StoreCase.test_legacy_names_migrate_once_on_restart_preserving_custom_settings_and_events) ... ok
+test_russian_display_layer_covers_all_282_roles_without_changing_sources (test_office.StoreCase.test_russian_display_layer_covers_all_282_roles_without_changing_sources) ... ok
+test_settings_members_materials_events_survive_store_restart (test_office.StoreCase.test_settings_members_materials_events_survive_store_restart) ... ok
+test_starter_team_and_project_membership_are_independent (test_office.StoreCase.test_starter_team_and_project_membership_are_independent) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 26.619s
+
+OK

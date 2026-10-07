@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 300" role="img" aria-labelledby="title desc">
+<title id="title">AI Office</title><desc id="desc">A local workspace with 282 specialist profiles in 18 departments, explicit handoffs and owner review.</desc>
+<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0B1220"/><stop offset="1" stop-color="#111D31"/></linearGradient><linearGradient id="accent"><stop stop-color="#60A5FA"/><stop offset="1" stop-color="#EC8C9C"/></linearGradient></defs>
+<rect width="1280" height="300" rx="18" fill="url(#bg)"/>
+<path d="M52 253H1228" stroke="#24334C"/><path d="M52 255H380" stroke="url(#accent)" stroke-width="3"/>
+<g fill="none" stroke="#60A5FA" opacity=".18"><circle cx="1030" cy="146" r="110"/><circle cx="1030" cy="146" r="77"/><path d="M920 146H1140M1030 36V256M952 68L1108 224M952 224L1108 68"/></g>
+<g fill="#60A5FA"><circle cx="1030" cy="36" r="5"/><circle cx="1140" cy="146" r="5"/><circle cx="1030" cy="256" r="5"/><circle cx="920" cy="146" r="5"/></g>
+<g fill="#EC8C9C"><circle cx="952" cy="68" r="5"/><circle cx="1108" cy="224" r="5"/><circle cx="952" cy="224" r="5"/><circle cx="1108" cy="68" r="5"/><circle cx="1030" cy="146" r="14"/></g>
+<text x="56" y="65" fill="#60A5FA" font-family="monospace" font-size="15" letter-spacing="3">LOCAL AGENT WORKSPACE</text>
+<text x="52" y="148" fill="#F1F5F9" font-family="Arial,sans-serif" font-size="72" font-weight="700">AI Office<tspan fill="#EC8C9C">.</tspan></text>
+<text x="56" y="188" fill="#CBD5E1" font-family="Arial,sans-serif" font-size="21">Specialist roles. Visible results. Owner control.</text>
+<text x="56" y="228" fill="#93C5FD" font-family="monospace" font-size="15">282 PROFILES / 18 DEPARTMENTS / EXPLICIT HANDOFFS</text>
+</svg>

@@ -1,0 +1,13 @@
+export type Profile = { id: string; name: string; category: string; description: string; display_name_ru?: string; description_ru?: string; color?: string; emoji?: string; vibe?: string; instructions_md?: string; profile_path?: string; source_sha256?: string; source_archive_entry?: string };
+export type Category = { id: string; display_name_ru: string; agent_count: number; ui_color: string };
+export type Member = { profile_id: string; project_id: string; display_name_ru: string; autonomy: string; tools: string[]; manager_id: string | null; status: string; task_id: string | null };
+export type Stage = { id: string; agent_id: string; name: string; status: string; output_title: string; output_id: string | null; started_at: string | null; finished_at: string | null; error: string | null; usage: Record<string, number> | null; cost: number | null; input?: {materials: {id: string; title: string; content: string}[]; project: unknown; allowed_tools: string[]}; };
+export type Task = { id: string; project_id: string; title: string; goal: string; completion: string; priority: string; material_ids: string[]; stages: Stage[]; status: string; mode: string | null; cursor: number; auto: boolean; demo: boolean; created_at: string; scheduled_at: string | null; approval: { kind: string; text: string } | null; history: {run_id: string; status: string; finished_at: string}[] };
+export type Material = { id: string; title: string; content: string; project_id: string; task_id: string | null; agent_id: string | null; example: boolean; created_at: string; kind: string; stage_id?: string };
+export type OfficeEvent = { id: string; seq: number; time: string; project_id: string; task_id: string | null; agent_id: string | null; target_agent_id?: string; tool_id?: string; material_id?: string; action: string; text: string };
+export type Tool = { id: string; name: string; description: string; connected: boolean; kind: string };
+export type Project = {id: string; name: string; context: string; owner: string};
+export type State = { project: Project; projects: Project[]; members: Member[]; tasks: Task[]; materials: Material[]; events: OfficeEvent[]; tools: Tool[]; mode: string; model: { configured: boolean; enabled: boolean; available: boolean; name: string | null; verified: boolean }; preferences: Record<string, unknown> };
+export type Catalog = {agents: Profile[]; categories: Category[]; agent_count: number};
+export type Page = 'office'|'catalog'|'team'|'tasks'|'scenarios'|'knowledge'|'tools'|'events'|'settings';
+export type View = 'radial'|'graph'|'hierarchy'|'department';

@@ -1,0 +1,19 @@
+services:
+  office:
+    build: .
+    ports:
+      - "127.0.0.1:4197:4197"
+    environment:
+      OFFICE_ENABLE_MODEL: ${OFFICE_ENABLE_MODEL:-false}
+      OFFICE_MODEL_URL: ${OFFICE_MODEL_URL:-}
+      OFFICE_MODEL_NAME: ${OFFICE_MODEL_NAME:-}
+      OFFICE_MODEL_KEY: ${OFFICE_MODEL_KEY:-}
+    volumes:
+      - office-data:/app/data
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+volumes:
+  office-data:

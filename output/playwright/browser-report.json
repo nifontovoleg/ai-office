@@ -1,0 +1,60 @@
+{
+  "started": "2026-10-07T21:03:09.490Z",
+  "checks": [
+    "Desktop renders, SSE connected, no page overflow",
+    "WCAG AA automation: office desktop",
+    "282 catalog searchable with category; original instruction opens directly",
+    "WCAG AA automation: original profile dialog",
+    "Dialog Escape closes and restores focus",
+    "Separate project created with 8 starter members",
+    "Add/remove membership preserves profile in library",
+    "Department renders tools, agents, processes and department",
+    "Graph filters toggle; hierarchy includes owner",
+    "Zoom and fit controls work",
+    "Full 10-stage demo, 9 handoffs, one concrete revision, examples saved",
+    "WCAG AA automation: task detail and approval",
+    "Final result stays pending until owner approval",
+    "WCAG AA automation: new task form",
+    "Task creation persists ordered named stages, priority and completion criteria",
+    "Unavailable model reports error; demo is not silently substituted",
+    "WCAG AA automation: office mobile 390",
+    "Mobile has accessible team list without requiring map panning",
+    "320px team and long modal scroll fit; footer remains reachable",
+    "No browser exceptions or unexpected network failures"
+  ],
+  "consoleErrors": [],
+  "networkErrors": [],
+  "accessibility": [
+    {
+      "screen": "office desktop",
+      "violations": []
+    },
+    {
+      "screen": "original profile dialog",
+      "violations": []
+    },
+    {
+      "screen": "task detail and approval",
+      "violations": []
+    },
+    {
+      "screen": "new task form",
+      "violations": []
+    },
+    {
+      "screen": "office mobile 390",
+      "violations": []
+    }
+  ],
+  "screenshots": [
+    "01-overview.png",
+    "02-department.png",
+    "03-task.png",
+    "04-mobile-office.png",
+    "05-mobile-team-320.png",
+    "06-mobile-task-form.png"
+  ],
+  "status": "passed",
+  "finished": "2026-10-07T21:03:19.780Z",
+  "project_id": "project-666d324e8a5c"
+}

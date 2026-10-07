@@ -1,0 +1,23 @@
+{
+  "checks": [
+    "All 282 roles have separate Russian names and descriptions",
+    "Russian catalog search opens a fully localized role overview",
+    "Axe Russian role overview",
+    "Original instruction stays intact and has an explicit source language",
+    "Russian and original-ID searches work in team and executor selection",
+    "Axe Russian team at 320px",
+    "Long Russian role labels fit the narrow team view"
+  ],
+  "accessibility": [
+    {
+      "name": "Russian role overview",
+      "violations": []
+    },
+    {
+      "name": "Russian team at 320px",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}

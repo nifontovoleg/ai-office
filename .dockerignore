@@ -1,0 +1,14 @@
+.venv
+.qa-python
+frontend/node_modules
+data
+.env
+__pycache__
+tests
+output
+.git
+.repo-prep
+.env.*
+!.env.example
+docs/screenshots
+reference

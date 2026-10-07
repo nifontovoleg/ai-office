@@ -1,0 +1,39 @@
+{
+  "checks": [
+    "282 unique members added, original settings preserved, demo still has 8 assignees",
+    "Every member reachable through paginated team",
+    "Search + department filter opens full original instruction",
+    "Empty search recovers all members",
+    "Axe 282 executor search form",
+    "Task form selects a non-demo role and retains stage order across executor searches",
+    "Axe 282 office overview",
+    "18 departments shown without 282 overlapping labels or Tab stops",
+    "Axe large department",
+    "65 engineering profiles accessible through department pages",
+    "Bulk import repeats safely without duplicates",
+    "282-member team persists after reload",
+    "Axe 282 team mobile search",
+    "Mobile search reaches any of 282 members without horizontal overflow",
+    "Removing last-page members clamps page and preserves a valid visible range"
+  ],
+  "accessibility": [
+    {
+      "name": "282 executor search form",
+      "violations": []
+    },
+    {
+      "name": "282 office overview",
+      "violations": []
+    },
+    {
+      "name": "large department",
+      "violations": []
+    },
+    {
+      "name": "282 team mobile search",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "status": "passed"
+}
