@@ -5,9 +5,12 @@ services:
       - "127.0.0.1:4197:4197"
     environment:
       OFFICE_ENABLE_MODEL: ${OFFICE_ENABLE_MODEL:-false}
+      OFFICE_MODEL_PROTOCOL: ${OFFICE_MODEL_PROTOCOL:-chat_completions}
       OFFICE_MODEL_URL: ${OFFICE_MODEL_URL:-}
       OFFICE_MODEL_NAME: ${OFFICE_MODEL_NAME:-}
       OFFICE_MODEL_KEY: ${OFFICE_MODEL_KEY:-}
+      OFFICE_MODEL_MAX_TOKENS: ${OFFICE_MODEL_MAX_TOKENS:-8192}
+      OFFICE_MODEL_TIMEOUT_SECONDS: ${OFFICE_MODEL_TIMEOUT_SECONDS:-120}
     volumes:
       - office-data:/app/data
     restart: unless-stopped

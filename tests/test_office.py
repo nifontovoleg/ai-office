@@ -25,7 +25,7 @@ CATALOG = ROOT / "catalog"
 FIRST = "agents-orchestrator"
 SECOND = "design-ux-researcher"
 DEFAULT_TOOLS = ["project_context", "previous_materials", "material_export"]
-MODEL_ENV = {"OFFICE_ENABLE_MODEL": "true", "OFFICE_MODEL_URL": "https://model.example/v1/chat/completions", "OFFICE_MODEL_NAME": "test-model", "OFFICE_MODEL_KEY": "SECRET-DO-NOT-LEAK"}
+MODEL_ENV = {"OFFICE_ENABLE_MODEL": "true", "OFFICE_MODEL_PROTOCOL": "chat_completions", "OFFICE_MODEL_URL": "https://model.example/v1/chat/completions", "OFFICE_MODEL_NAME": "test-model", "OFFICE_MODEL_KEY": "SECRET-DO-NOT-LEAK", "OFFICE_MODEL_TIMEOUT_SECONDS": "120", "OFFICE_MODEL_MAX_TOKENS": "8192"}
 from backend.localization import ROLE_NAMES_RU, ROLE_DESCRIPTIONS_RU, localized_profile
 
 
@@ -612,6 +612,23 @@ class RuntimeCase(unittest.IsolatedAsyncioTestCase):
         output = self.store.get("materials", finished["stages"][0]["output_id"])
         self.assertFalse(output["example"])
         self.assertEqual(output["content"], "Ответ реального протокола")
+
+    async def test_claude_native_stage_persists_text_usage_and_handoff(self):
+        task = self.make_task([FIRST])
+        def responder(request):
+            self.assertEqual(request.headers["x-api-key"], "SECRET-DO-NOT-LEAK")
+            self.assertNotIn("SECRET-DO-NOT-LEAK", request.content.decode())
+            return httpx.Response(200, json={"content": [{"type": "text", "text": "Результат Claude"}], "usage": {"input_tokens": 12, "output_tokens": 8}, "stop_reason": "end_turn"})
+        self.engine.adapter["model"] = ModelAdapter(httpx.MockTransport(responder))
+        with patch.dict(os.environ, {**MODEL_ENV, "OFFICE_MODEL_PROTOCOL": "anthropic_messages", "OFFICE_MODEL_URL": "https://api.anthropic.com/v1/messages", "OFFICE_MODEL_NAME": "claude-sonnet-5-5"}):
+            self.engine.start(task["id"], "model")
+            finished = await self.finish(task)
+        stage = finished["stages"][0]
+        self.assertEqual(stage["usage"]["total_tokens"], 20)
+        output = self.store.get("materials", stage["output_id"])
+        self.assertFalse(output["example"])
+        self.assertEqual(output["content"], "Результат Claude")
+        self.assertNotIn("SECRET-DO-NOT-LEAK", json.dumps(self.store.events("project-main")))
 
     async def test_model_errors_redirect_bad_json_and_network_are_safe(self):
         cases = [httpx.Response(401, text="SECRET-DO-NOT-LEAK"), httpx.Response(302, headers={"location": "https://other.example/SECRET-DO-NOT-LEAK"}), httpx.Response(200, text="SECRET-DO-NOT-LEAK"), httpx.Response(200, json={"choices": []}), httpx.Response(200, json={"choices": [{"message": {"content": ""}}]})]

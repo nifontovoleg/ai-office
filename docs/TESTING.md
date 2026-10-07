@@ -10,6 +10,18 @@ The suite creates temporary SQLite databases and uses ASGITransport for API test
 
 Russian presentation regressions cover all catalog IDs, nonempty Russian names/descriptions, unchanged source fields and preservation of customized member configuration.
 
+Provider regressions cover native Claude authentication, separate system/user context, text blocks, cache token accounting, token-limit errors, malformed responses and integration with stage persistence/handoffs. OpenCode helper tests verify empty-key defaults, process-env precedence, provider/model namespaces, safe diagnostics and explicit launch behavior. No CLI model execution is performed by those tests.
+
+Check each tracked preset locally without contacting a provider:
+
+```powershell
+.\.venv\Scripts\python.exe tools/opencode.py --check --env-file .env.example
+.\.venv\Scripts\python.exe tools/opencode.py --check --env-file config/proxyapi.env.example
+.\.venv\Scripts\python.exe tools/opencode.py --check --env-file config/claude.env.example
+```
+
+For a clean terminal with no provider overrides, each empty-key example reports `key_present=false` and `provider_access_verified=false`. A missing CLI is allowed for a configuration check. See [PROVIDERS.md](PROVIDERS.md) for the explicit installation/launch steps.
+
 ## Browser and accessibility
 
 Start an isolated local server before running browser tests. For example, set `OFFICE_DATA_DIR` to a temporary directory before starting uvicorn. Do not point a test run at valuable project data: tests create QA projects and operate on the built-in demonstration.

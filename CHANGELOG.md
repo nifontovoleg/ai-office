@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add empty-key OpenAI, ProxyAPI and Claude Platform env presets and a detailed connection guide.
+- Add native Anthropic Messages authentication, text output and normalized token usage to the model adapter.
+- Add an explicit OpenCode launcher with Sol/Luna and Sonnet/Haiku configurations, local checks and credential-boundary tests.
+- Keep external office tool execution disconnected; OpenCode sessions are launched separately.
+
 - Add a complete local FastAPI / React / TypeScript / SQLite office for 282 Agency Agents profiles in 18 departments.
 - Add radial overview, relationship graph, hierarchy and paginated department detail.
 - Separate catalog profiles, project membership and task executors.

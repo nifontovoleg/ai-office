@@ -17,7 +17,7 @@ This record describes actual checks of the local AI Office implementation and th
 
 | Check | Result |
 | --- | --- |
-| Backend unit, integration and security contracts | 45 passed, including Russian-presentation regressions |
+| Backend unit, integration and security contracts | 63 passed, including provider and Russian-presentation regressions |
 | TypeScript and Vite production build | Passed |
 | Main browser workflow | 20 checks passed |
 | Complete 282-member workflow | 15 checks passed |
@@ -30,6 +30,8 @@ This record describes actual checks of the local AI Office implementation and th
 | Docker Compose | `docker compose config --quiet` passed |
 
 The Russian UI update includes localized role names/descriptions, Russian search, labels and task defaults while preserving source records and custom user settings. Current logs supersede earlier counts in screenshots or historical descriptions.
+
+The October 8 provider update added 18 tests for native Claude Messages, stage persistence and OpenCode configuration/launch boundaries. All 63 backend tests passed without live credentials. The existing browser/accessibility rows describe the earlier full UI validation; those browser suites were not rerun for the provider update. The Russian connection hint was updated and the production bundle was rebuilt.
 
 ## Evidence
 
@@ -44,7 +46,7 @@ The Russian UI update includes localized role names/descriptions, Russian search
 
 ## Scope and limits
 
-The local application uses **DemoAdapter**. No paid provider call was performed. ModelAdapter is tested with HTTP MockTransport for payload isolation, reported usage, safe errors, result persistence and absence of demo fallback. Provider account access, real model output, billing and external integrations remain unverified.
+The local application uses **DemoAdapter**. No paid provider call was performed. ModelAdapter's Chat Completions and native Claude Messages protocols are tested with HTTP MockTransport for payload isolation, reported usage, safe errors, result persistence and absence of demo fallback. Empty-key provider presets and the OpenCode helper were checked locally; OpenCode launch behavior was tested with a mocked subprocess. Provider account access, real model output, billing and actual OpenCode model/tool execution remain unverified. OpenCode is a separate CLI session and is not registered as an office stage executor.
 
 The local Docker Engine was unavailable; the image/container was not locally built or run. Python plus the built React interface was tested separately. GitHub CI results are recorded by the repository's Actions page after publication.
 

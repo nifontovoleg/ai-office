@@ -61,9 +61,11 @@ Per-task locks prevent duplicate stage completion and concurrent reset. Export p
 
 ## Adapters
 
-`DemoAdapter` returns explicitly marked teaching examples, without usage or cost. `ModelAdapter` posts a Chat Completions request through `httpx`, checks output and usage structure, and stores actual reported token counters. Cost remains unknown without provider cost data. Invalid configuration or provider errors become visible errors. The engine does not substitute demo text after a model failure.
+`DemoAdapter` returns explicitly marked teaching examples, without usage or cost. `ModelAdapter` posts either a Chat Completions request or a native Anthropic Messages request through `httpx`, checks output and usage structure, and stores actual reported token counters. Claude cache counters are included in normalized input usage. Truncated Claude output becomes an error. Cost remains unknown without provider cost data. Invalid configuration or provider errors become visible errors. The engine does not substitute demo text after a model failure.
 
 The model adapter generates Markdown. It does not execute returned shell commands, publish websites, browse, or push to GitHub.
+
+`tools/opencode.py` loads a local env file and can explicitly launch a separate OpenCode process using a tracked provider preset. It is not registered in `Engine.adapter`; local config checking does not call a provider or establish live access. See [provider connections](PROVIDERS.md).
 
 ## Events and recovery
 

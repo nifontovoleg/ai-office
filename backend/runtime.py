@@ -26,7 +26,8 @@ DEMO_PLAN = [
 def model_config():
     enabled = os.getenv("OFFICE_ENABLE_MODEL", "false").lower() == "true"
     configured = bool(os.getenv("OFFICE_MODEL_URL") and os.getenv("OFFICE_MODEL_NAME") and os.getenv("OFFICE_MODEL_KEY"))
-    return {"configured": configured, "enabled": enabled, "available": enabled and configured, "name": os.getenv("OFFICE_MODEL_NAME") or None, "protocol": "chat_completions", "verified": False}
+    protocol = os.getenv("OFFICE_MODEL_PROTOCOL", "chat_completions")
+    return {"configured": configured, "enabled": enabled, "available": enabled and configured and protocol in ("chat_completions", "anthropic_messages"), "name": os.getenv("OFFICE_MODEL_NAME") or None, "protocol": protocol if protocol in ("chat_completions", "anthropic_messages") else "unsupported", "verified": False}
 
 
 class DemoAdapter:
@@ -51,13 +52,27 @@ class ModelAdapter:
             {"role": "system", "content": payload["instructions_md"]},
             {"role": "user", "content": json.dumps({k: v for k, v in payload.items() if k != "instructions_md"}, ensure_ascii=False)},
         ]
+        protocol = model_config()["protocol"]
+        try:
+            timeout = int(os.getenv("OFFICE_MODEL_TIMEOUT_SECONDS", "120"))
+            max_tokens = int(os.getenv("OFFICE_MODEL_MAX_TOKENS", "8192"))
+            if not 1 <= timeout <= 600 or not 128 <= max_tokens <= 128000:
+                raise ValueError
+        except ValueError:
+            raise ValueError("Некорректный тайм-аут или лимит токенов модели в серверном .env.") from None
+        if protocol == "anthropic_messages":
+            headers = {"x-api-key": os.environ["OFFICE_MODEL_KEY"], "anthropic-version": "2023-06-01"}
+            body = {"model": os.environ["OFFICE_MODEL_NAME"], "max_tokens": max_tokens, "system": policy + "\n\n" + payload["instructions_md"], "messages": [messages[2]]}
+        else:
+            headers = {"Authorization": "Bearer " + os.environ["OFFICE_MODEL_KEY"]}
+            body = {"model": os.environ["OFFICE_MODEL_NAME"], "messages": messages}
         url = os.environ["OFFICE_MODEL_URL"]
         target = urlsplit(url)
         if target.username or target.password or target.fragment or not target.hostname or (target.scheme != "https" and not (target.scheme == "http" and target.hostname in ("localhost", "127.0.0.1", "::1"))):
             raise ValueError("URL модели должен использовать HTTPS; HTTP разрешён только для локального сервера")
         try:
-            async with httpx.AsyncClient(timeout=120, follow_redirects=False, transport=self.transport) as client:
-                response = await client.post(url, headers={"Authorization": "Bearer " + os.environ["OFFICE_MODEL_KEY"]}, json={"model": os.environ["OFFICE_MODEL_NAME"], "messages": messages})
+            async with httpx.AsyncClient(timeout=timeout, follow_redirects=False, transport=self.transport) as client:
+                response = await client.post(url, headers=headers, json=body)
         except (httpx.HTTPError, httpx.InvalidURL) as exc:
             raise ValueError("Ошибка связи с моделью. Проверьте URL и доступность провайдера.") from exc
         if response.is_redirect:
@@ -67,12 +82,27 @@ class ModelAdapter:
             raise ValueError(f"Провайдер вернул HTTP {response.status_code}; проверьте настройки и доступ к модели.")
         try:
             data = response.json()
-            content = data["choices"][0]["message"]["content"]
+            if protocol == "anthropic_messages":
+                if not isinstance(data["content"], list):
+                    raise TypeError
+                content = "\n\n".join(block["text"] for block in data["content"] if block["type"] == "text")
+            else:
+                content = data["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError, ValueError) as exc:
-            raise ValueError("Ответ провайдера не соответствует Chat Completions") from exc
+            raise ValueError("Ответ провайдера не соответствует настроенному протоколу модели") from exc
+        if protocol == "anthropic_messages" and data.get("stop_reason") == "max_tokens":
+            raise ValueError("Ответ Claude достиг лимита токенов. Увеличьте OFFICE_MODEL_MAX_TOKENS и повторите этап явно.")
         if not isinstance(content, str) or not content.strip():
             raise ValueError("Провайдер не вернул текстовый результат")
         usage = data.get("usage")
+        if protocol == "anthropic_messages" and isinstance(usage, dict):
+            input_tokens, output_tokens = usage.get("input_tokens"), usage.get("output_tokens")
+            cache_read, cache_write = usage.get("cache_read_input_tokens", 0), usage.get("cache_creation_input_tokens", 0)
+            if all(type(value) is int and value >= 0 for value in (input_tokens, output_tokens, cache_read, cache_write)):
+                prompt_tokens = input_tokens + cache_read + cache_write
+                usage = {"prompt_tokens": prompt_tokens, "completion_tokens": output_tokens, "total_tokens": prompt_tokens + output_tokens}
+            else:
+                usage = None
         if not isinstance(usage, dict):
             usage = None
         else:

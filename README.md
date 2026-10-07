@@ -16,18 +16,18 @@
   <img src="https://img.shields.io/badge/Scope-Local%20MVP-14B8A6?style=flat-square&amp;labelColor=555555" alt="Local MVP" />
   <img src="https://img.shields.io/badge/Repository-Private-181717?style=flat-square&amp;labelColor=555555&amp;logo=github&amp;logoColor=white" alt="Private repository" />
   <br />
-  <img src="https://img.shields.io/badge/Backend%20tests-45%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="45 backend tests passed" />
+  <img src="https://img.shields.io/badge/Backend%20tests-63%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="63 backend tests passed" />
   <img src="https://img.shields.io/badge/Browser%20checks-42%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="42 browser checks passed" />
   <a href="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml"><img src="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI workflow status" /></a>
 
-  <p><a href="#quick-start">Quick start</a> · <a href="#screenshots">Screenshots</a> · <a href="docs/ARCHITECTURE.md">Architecture</a> · <a href="docs/API.md">API</a> · <a href="docs/TESTING.md">Testing</a></p>
+  <p><a href="#quick-start">Quick start</a> · <a href="#connect-models-and-opencode">Connect models</a> · <a href="#screenshots">Screenshots</a> · <a href="docs/ARCHITECTURE.md">Architecture</a> · <a href="docs/API.md">API</a> · <a href="docs/TESTING.md">Testing</a></p>
 </div>
 
 **AI Office** is a local web application for organizing specialist AI roles into a visible, controlled team. It brings the Agency Agents catalog, project membership, staged tasks, materials, permissions, event history, and owner approvals into one workspace.
 
 The application interface, role names, and role descriptions are in Russian. Repository documentation and programming identifiers are in English. Original catalog records and Markdown instructions are retained as source material with SHA-256 provenance; localized presentation is stored separately.
 
-> The default executor is a deterministic demonstration adapter. It creates clearly marked examples without calling a model. A server-configured Chat Completions adapter is implemented and tested with a simulated HTTP transport; live provider access is a separate setup step.
+> The default executor is a deterministic demonstration adapter. It creates clearly marked examples without calling a model. Server-configured OpenAI-compatible Chat Completions and native Claude Messages protocols are implemented and tested with simulated HTTP transports; live provider access is a separate setup step.
 
 ---
 
@@ -134,6 +134,77 @@ The port is published only on `127.0.0.1:4197`; SQLite persists in the `office-d
 
 A manual step first starts a stage, and the next step completes it and hands over its output. Reset creates a new run while retaining completed materials and previous run history. The main office has 282 participants, but only the eight assigned specialists execute this demonstration.
 
+## Connect models and OpenCode
+
+The recommended OpenAI setup uses **GPT-6.1 Sol** for development and **GPT-6 Luna** for lightweight OpenCode work. An alternative direct **Claude Platform** preset uses **Claude Sonnet 5.5 / Haiku 5.5**. **ProxyAPI** provides a separate preset for OpenAI models through its gateway.
+
+| Connection | Local env template | Office request model |
+| --- | --- | --- |
+| Direct OpenAI | [`.env.example`](.env.example) | `gpt-6.1-sol` |
+| OpenAI via ProxyAPI | [`config/proxyapi.env.example`](config/proxyapi.env.example) | `openai/gpt-6.1-sol` |
+| Direct Claude Platform | [`config/claude.env.example`](config/claude.env.example) | `claude-sonnet-5-5` |
+
+### 1. Create your provider key
+
+- **OpenAI:** sign in to [OpenAI Platform](https://platform.openai.com/), select the intended project, create a key in [API keys](https://platform.openai.com/api-keys), and check API billing/model access.
+- **ProxyAPI:** create a key in [ProxyAPI Console](https://console.proxyapi.ru/) and check its balance/model catalog.
+- **Claude:** sign in to [Claude Platform](https://platform.claude.com/), select the intended organization, create a key in its API-key settings and check API billing/model access.
+
+Store the selected provider's key in **`OFFICE_MODEL_KEY` in your local `.env`**. The office and optional OpenCode launcher use that same field. Keep the checked-in examples empty. Codex/ChatGPT/Claude chat subscriptions are separate access paths; the office uses provider API credentials.
+
+### 2. Prepare `.env`
+
+From the repository root, choose one template and copy it only when `.env` does not already exist:
+
+```powershell
+$providerTemplate = '.env.example'  # OpenAI
+# ProxyAPI: 'config/proxyapi.env.example'
+# Claude:   'config/claude.env.example'
+if (-not (Test-Path -LiteralPath '.env')) {
+    Copy-Item -LiteralPath $providerTemplate -Destination '.env'
+}
+notepad .env
+```
+
+For an existing `.env`, edit the provider fields and preserve your local storage settings. The required office values are:
+
+| Setting | OpenAI | ProxyAPI | Claude Platform |
+| --- | --- | --- | --- |
+| `OFFICE_MODEL_PROTOCOL` | `chat_completions` | `chat_completions` | `anthropic_messages` |
+| `OFFICE_MODEL_URL` | `https://api.openai.com/v1/chat/completions` | `https://api.proxyapi.ru/v1/chat/completions` | `https://api.anthropic.com/v1/messages` |
+| `OFFICE_MODEL_NAME` | `gpt-6.1-sol` | `openai/gpt-6.1-sol` | `claude-sonnet-5-5` |
+| `OFFICE_MODEL_KEY` | Your OpenAI API key | Your ProxyAPI key | Your Claude Platform API key |
+
+All presets keep `OFFICE_ENABLE_MODEL=false` initially. Set it to `true` when ready to permit office requests. `OFFICE_MODEL_MAX_TOKENS=8192` caps Anthropic output; `OFFICE_MODEL_TIMEOUT_SECONDS=120` controls the office request timeout.
+
+### 3. Enable the model in the office
+
+Restart `START.cmd`, open **http://127.0.0.1:4197/** and select **Настройки → Подключённая модель**. Create and explicitly start a small one-stage task. Inspect its material and reported token usage, then check the provider dashboard for actual spend.
+
+Configured settings and `/api/health` do not verify account access. Real requests can consume your API balance. The application never silently changes a failed model run into demo output.
+
+### 4. Optional: start OpenCode for a customer project
+
+Install OpenCode separately with Node.js/npm, then check local settings:
+
+```powershell
+npm install -g opencode-ai
+opencode --version
+.\.venv\Scripts\python.exe tools/opencode.py --check
+```
+
+`--check` makes no model request and does not print the key. After the key and CLI are ready, explicitly start a session in an existing project directory:
+
+```powershell
+.\.venv\Scripts\python.exe tools/opencode.py --start --project 'D:\Projects\customer-app'
+```
+
+The launcher loads `.env` and chooses the corresponding tracked JSON configuration. Keys enter the child environment rather than command arguments or JSON. OpenCode uses the preset's main/small models and asks before edits and shell commands. The small model handles internal lightweight work, not automatic routing of office stages.
+
+**Current boundary:** this starts a separate OpenCode coding session. AI Office stages still generate Markdown; the office does not automatically invoke OpenCode or execute external browser/GitHub tools. `--start` can incur model charges independently of the office's enable flag.
+
+See the **[complete provider guide](docs/PROVIDERS.md)** for Linux/macOS commands, Docker settings, every variable, troubleshooting, model switching, cost controls and verification limits.
+
 ## Architecture
 
 ```mermaid
@@ -145,7 +216,7 @@ flowchart LR
     Engine --> Permissions[Permission and approval checks]
     Permissions --> Demo[DemoAdapter]
     Permissions --> Model[ModelAdapter]
-    Model --> Provider[Configured Chat Completions endpoint]
+    Model --> Provider[Configured Chat Completions or Claude Messages endpoint]
     Demo --> Results[Materials and handoff events]
     Model --> Results
     Results --> Store
@@ -172,9 +243,9 @@ npm run test:localization
 
 Run browser tests against a running server. They create separate QA projects and exercise the primary demo; use an isolated `OFFICE_DATA_DIR` for repeated testing.
 
-| Evidence | Recorded result before repository publication |
+| Evidence | Recorded result |
 | --- | --- |
-| Backend unit, integration, and security contracts | 45 passed, including Russian-presentation regressions |
+| Backend unit, integration, and security contracts | 63 passed, including provider and Russian-presentation regressions |
 | Original browser flow | 20 passed |
 | Complete 282-member browser flow | 15 passed |
 | Russian presentation browser regressions | 7 passed |
@@ -182,7 +253,7 @@ Run browser tests against a running server. They create separate QA projects and
 | Dependency audits | Zero known npm and Python vulnerabilities in the recorded audit |
 | Responsive layout | Desktop 1440 px and mobile 390 / 320 px checked |
 
-Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend tests, dependency audits, and Compose configuration on GitHub. Browser checks are reproducible locally; see [testing](docs/TESTING.md).
+The provider update reran backend/build checks; browser and accessibility results are from the earlier full UI validation. Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend tests, empty-key provider checks, documentation/publication checks, dependency audits, and Compose configuration on GitHub. Browser checks are reproducible locally; see [testing](docs/TESTING.md).
 
 ## Project structure
 
@@ -194,11 +265,12 @@ ai-office/
 │   ├── tests/               # Playwright workflows and screenshot capture
 │   └── dist/                # Included production UI bundle
 ├── catalog/                 # Original profiles, JSON catalog, starter team
+├── config/                  # ProxyAPI/Claude env examples and OpenCode JSON presets
 ├── docs/                    # Architecture, API, setup, testing, screenshots and banner
 ├── tests/                   # Backend unit, integration and security contracts
 ├── output/                  # Recorded validation artifacts
 ├── reference/               # Supplied visual reference frames
-├── tools/                   # Portable archive builder
+├── tools/                   # Archive builder, repository checks and OpenCode launcher
 ├── .github/workflows/       # Continuous integration
 ├── .env.example             # Safe server-side configuration template
 ├── START.cmd / INSTALL.cmd  # English Windows entry points
@@ -219,6 +291,7 @@ The model adapter has transport-level test coverage. Provider credentials, accou
 | [Architecture](docs/ARCHITECTURE.md) | Components, data boundaries, lifecycle, concurrency, and event flow |
 | [API](docs/API.md) | Routes, request examples, actions, response errors, and SSE |
 | [Configuration](docs/CONFIGURATION.md) | Environment variables, model setup, storage, Docker, and troubleshooting |
+| [Provider connections](docs/PROVIDERS.md) | OpenAI, ProxyAPI, Claude Platform, local keys and optional OpenCode sessions |
 | [Development](docs/DEVELOPMENT.md) | Frontend rebuilds, extension points, CI, and contribution workflow |
 | [Testing](docs/TESTING.md) | Backend, browser, accessibility, audits, and evidence scope |
 | [Security](SECURITY.md) | Local threat boundary and private vulnerability reporting |

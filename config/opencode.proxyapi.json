@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "enabled_providers": ["proxyapi"],
+  "model": "{env:OPENCODE_MODEL}",
+  "small_model": "{env:OPENCODE_SMALL_MODEL}",
+  "share": "disabled",
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "external_directory": "ask"
+  },
+  "provider": {
+    "proxyapi": {
+      "npm": "@ai-sdk/openai",
+      "name": "ProxyAPI OpenAI models",
+      "options": {
+        "baseURL": "{env:OPENCODE_BASE_URL}",
+        "apiKey": "{env:OFFICE_MODEL_KEY}",
+        "timeout": 120000
+      },
+      "models": {
+        "openai/gpt-6.1-sol": { "name": "GPT-6.1 Sol via ProxyAPI" },
+        "openai/gpt-6-luna": { "name": "GPT-6 Luna via ProxyAPI" }
+      }
+    }
+  }
+}
