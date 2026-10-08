@@ -13,6 +13,7 @@ AI Office is intended for one local OS user, with the API bound to `127.0.0.1`. 
 - Per-task locks, atomic output/handoff commits, cancellation and restart recovery.
 - Server-only model credentials, HTTPS or loopback provider URLs, no redirects or URL user information.
 - Sanitized provider errors and explicit separation of demo/model execution.
+- Restricted Codex text-stage subprocesses with saved ChatGPT login, stdin context and no API credentials in the child environment.
 - Static-path filtering and attachment-based material downloads.
 - Loopback Docker publication and a non-root container runtime configuration.
 
@@ -21,6 +22,8 @@ Detailed executable evidence is in [tests/SECURITY_REVIEW.md](tests/SECURITY_REV
 ## Data handling
 
 SQLite project data and optional `.env` are plaintext files protected by the OS user's permissions. The application does not encrypt them at rest or implement retention/DSAR controls. Stop the server before backing up `data/`. Git and archive packaging exclude local data and secrets.
+
+Codex and OpenCode maintain their own saved login outside this repository. Do not copy their authentication files into source, `.env`, archives or chat. Interactive coding sessions use the owner's selected project and CLI permissions; they remain separate from restricted office text stages.
 
 Catalog instructions are role inputs, not authority to grant capabilities. Model output is stored as text; it is not executed as shell code or published automatically.
 

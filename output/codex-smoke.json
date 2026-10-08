@@ -1,0 +1,14 @@
+{
+  "checked_on": "2026-10-08",
+  "transport": "codex_cli",
+  "authentication": "saved_chatgpt_login",
+  "model_selection": "cli_default",
+  "status": "passed",
+  "content": "1. Запустить локальное приложение и убедиться, что главная страница открывается без ошибок.\n2. Проверить основные элементы интерфейса: ссылки, кнопки, формы и навигацию.\n3. Проверить консоль браузера и сетевые запросы: нет ошибок, ресурсы и API возвращают ожидаемые статусы.",
+  "usage": {
+    "prompt_tokens": 15606,
+    "completion_tokens": 74,
+    "total_tokens": 15680
+  },
+  "cost": null
+}

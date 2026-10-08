@@ -13,7 +13,7 @@ for directory, dirs, names in os.walk(root):
     for name in names:
         path = Path(directory) / name
         private_environment = (name == ".env" or name.startswith(".env.")) and name != ".env.example"
-        private_credentials = name.endswith((".pem", ".key")) or (name.startswith("credentials") and name.endswith(".json"))
+        private_credentials = name == "auth.json" or name.endswith((".pem", ".key")) or (name.startswith("credentials") and name.endswith(".json"))
         if private_environment or private_credentials or name.endswith((".pyc", ".tsbuildinfo", "failure.png")) or name == "initial-dom.txt":
             continue
         files.append(path)

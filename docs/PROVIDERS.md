@@ -1,6 +1,6 @@
 # Provider connections and OpenCode
 
-This guide covers direct OpenAI, ProxyAPI and direct Claude Platform access. All keys are supplied locally by the owner. The checked-in examples contain empty key fields and keep AI Office model calls disabled.
+The primary workflow is [Codex with saved ChatGPT login and optional OpenCode](CODEX.md). This guide covers alternative direct OpenAI, ProxyAPI and Claude Platform API access. All keys are supplied locally by the owner. The checked-in examples contain empty key fields and keep AI Office model calls disabled.
 
 ## What is connected
 
@@ -10,7 +10,7 @@ This guide covers direct OpenAI, ProxyAPI and direct Claude Platform access. All
 | OpenAI / ProxyAPI office preset | Uses Chat Completions for text generation |
 | Claude Platform office preset | Uses Anthropic Messages with `x-api-key` authentication |
 | Optional OpenCode launcher | Opens a separate coding session in an existing project folder, using an env-backed configuration |
-| Codex | Your separate development workspace; no Codex subscription credential is copied into the application |
+| Codex | The primary office text transport uses saved CLI ChatGPT login; interactive coding is separate |
 
 OpenCode is not registered as an AI Office stage executor. The office does not run returned code, invoke the OpenCode CLI, browse customer sites or push their repositories. Its browser/GitHub capabilities remain disconnected. Launching OpenCode separately enables the coding workflow described below; it does not connect those UI capabilities.
 
@@ -18,7 +18,7 @@ OpenCode is not registered as an AI Office stage executor. The office does not r
 
 | Provider | Env template | Office model | OpenCode main / small model |
 | --- | --- | --- | --- |
-| OpenAI | [`.env.example`](../.env.example) | `gpt-6.1-sol` | Sol / Luna |
+| OpenAI API | [`config/openai.env.example`](../config/openai.env.example) | `gpt-6.1-sol` | Sol / Luna |
 | ProxyAPI | [`config/proxyapi.env.example`](../config/proxyapi.env.example) | `openai/gpt-6.1-sol` | Sol / Luna through ProxyAPI |
 | Claude Platform | [`config/claude.env.example`](../config/claude.env.example) | `claude-sonnet-5-5` | Sonnet 5.5 / Haiku 5.5 |
 
@@ -35,7 +35,7 @@ Models can have account-specific availability. The examples use IDs verified in 
 3. Check billing, model availability and project usage settings before enabling calls.
 4. Put that key in `OFFICE_MODEL_KEY` in your local `.env`.
 
-API billing and included Codex/ChatGPT plan usage are different access paths. This application uses an API key; it does not inherit the desktop application's subscription allowance.
+API billing and included Codex/ChatGPT plan usage are different access paths. This API preset uses a key; the primary `codex_cli` office workflow uses saved ChatGPT login instead.
 
 ### ProxyAPI
 
@@ -61,7 +61,7 @@ Run these commands from the repository root after installing the application. Ch
 
 ```powershell
 # OpenAI:
-$providerTemplate = '.env.example'
+$providerTemplate = 'config/openai.env.example'
 # Or ProxyAPI: $providerTemplate = 'config/proxyapi.env.example'
 # Or Claude:   $providerTemplate = 'config/claude.env.example'
 
@@ -76,7 +76,7 @@ If `.env` already exists, edit it using the selected template rather than overwr
 On Linux/macOS, copy the selected file only when `.env` does not already exist, then edit it locally:
 
 ```bash
-test -f .env || cp .env.example .env
+test -f .env || cp config/openai.env.example .env
 # To select Claude on a fresh checkout, use config/claude.env.example instead.
 ```
 
@@ -92,6 +92,7 @@ test -f .env || cp .env.example .env
 | `OFFICE_MODEL_MAX_TOKENS` | Anthropic output-token limit, default `8192`, allowed range `128..128000`; not sent to Chat Completions |
 | `OFFICE_MODEL_TIMEOUT_SECONDS` | Office HTTP timeout, default `120`, allowed range `1..600` |
 | `OPENCODE_PROVIDER` | `openai`, `proxyapi` or `anthropic`; chooses the tracked JSON template |
+| `OPENCODE_AUTH` | `api_key` for these API presets; `chatgpt` uses the separate workflow in [CODEX.md](CODEX.md) |
 | `OPENCODE_BASE_URL` | HTTPS base URL ending in `/v1`, without a request-specific suffix |
 | `OPENCODE_MODEL` | Registered OpenCode main model, including its provider prefix |
 | `OPENCODE_SMALL_MODEL` | Registered OpenCode small model, including its provider prefix |
@@ -150,9 +151,9 @@ Linux/macOS:
 .venv/bin/python tools/opencode.py --start --project /path/to/customer-app
 ```
 
-The launcher reads the office `.env`, selects a config from `config/`, passes the secret in the child process environment and launches the CLI without putting the key in command arguments. It does not change your global OpenCode configuration or store a key in JSON. Without `--start`, it only checks settings.
+These API presets explicitly set `OPENCODE_AUTH=api_key`. The launcher reads the office `.env`, selects a config from `config/`, passes the secret in the child process environment and launches the CLI without putting the key in command arguments. It does not change your global OpenCode configuration or store a key in JSON. Without `--start`, it only checks settings. For ChatGPT browser login without an API key, use [CODEX.md](CODEX.md).
 
-OpenCode reads the project and uses the selected model after launch. Usage can incur charges even while `OFFICE_ENABLE_MODEL=false`: that flag gates office stages, while `--start` explicitly starts the separate coding tool. The templates ask before edits, shell commands and access outside the project, and disable session sharing. OpenCode permissions are not OS isolation; use a container or VM for execution that needs isolation.
+OpenCode reads the project and uses the selected model after launch. Usage can incur charges even while `OFFICE_ENABLE_MODEL=false`: that flag gates office stages, while `--start` explicitly starts the separate coding tool. The templates ask before edits, shell commands and access outside the project, and disable session sharing. OpenCode also merges global/project configuration; review those settings if they override the preset. OpenCode permissions are not OS isolation; use a container or VM for execution that needs isolation.
 
 You can start with this brief:
 

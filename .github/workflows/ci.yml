@@ -46,8 +46,10 @@ jobs:
       - name: Check empty-key provider presets offline
         run: |
           python tools/opencode.py --check --env-file .env.example
+          python tools/opencode.py --check --env-file config/openai.env.example
           python tools/opencode.py --check --env-file config/proxyapi.env.example
           python tools/opencode.py --check --env-file config/claude.env.example
+          python tools/codex.py --check --env-file .env.example
       - name: Audit Python dependencies
         run: pip-audit -r requirements.txt
       - name: Audit frontend dependencies

@@ -8,6 +8,7 @@
 | `backend/store.py` | SQLite persistence, validated catalog imports, project membership, transactions, events, hierarchy checks |
 | `backend/localization.py` | Russian role names and concise descriptions without modifying original catalog records |
 | `backend/runtime.py` | Task creation, stage snapshots, permissions, approvals, adapter calls, output commits, scheduling |
+| `backend/codex.py` | Saved-ChatGPT CLI authentication checks, restricted text turns, process cleanup and JSON token usage |
 | `frontend/src/App.tsx` | Navigation, project selection, state snapshots, SSE deduplication and mutations |
 | `frontend/src/Map.tsx` | Radial overview, relationship graph, department pages, hierarchy, camera and keyboard controls |
 | `frontend/src/Team.tsx` | Search, category filters, membership pages and safe page correction after removal |
@@ -61,11 +62,13 @@ Per-task locks prevent duplicate stage completion and concurrent reset. Export p
 
 ## Adapters
 
-`DemoAdapter` returns explicitly marked teaching examples, without usage or cost. `ModelAdapter` posts either a Chat Completions request or a native Anthropic Messages request through `httpx`, checks output and usage structure, and stores actual reported token counters. Claude cache counters are included in normalized input usage. Truncated Claude output becomes an error. Cost remains unknown without provider cost data. Invalid configuration or provider errors become visible errors. The engine does not substitute demo text after a model failure.
+`DemoAdapter` returns explicitly marked teaching examples, without usage or cost. `ModelAdapter` dispatches `codex_cli` to `CodexAdapter`, or posts a Chat Completions/native Anthropic Messages request through `httpx`. All transports check output and usage structure and store reported token counters. Claude cache counters are included in normalized input usage; Codex cached input is already a subset of its input count. Truncated Claude output becomes an error. Cost remains unknown without provider cost data. Invalid configuration or provider errors become visible errors. The engine does not substitute demo text after a model failure.
+
+`CodexAdapter` requires saved ChatGPT CLI login. It sends the role/context as JSON on stdin, removes API credentials from the child environment and uses `codex exec` in a temporary read-only directory. User configuration/project instructions and shell/apps/plugins/browser capabilities are disabled for office stages. It serializes calls per engine, captures JSON events, accepts initialization notices only with a later completed text turn, rejects unexpected tool events and terminates its owned process on timeout/shutdown cancellation. This is a local single-owner text transport, not an isolation boundary for untrusted tenants.
 
 The model adapter generates Markdown. It does not execute returned shell commands, publish websites, browse, or push to GitHub.
 
-`tools/opencode.py` loads a local env file and can explicitly launch a separate OpenCode process using a tracked provider preset. It is not registered in `Engine.adapter`; local config checking does not call a provider or establish live access. See [provider connections](PROVIDERS.md).
+`tools/codex.py` can explicitly open an interactive workspace-write Codex session in an existing customer folder, with on-request approvals and normal CLI configuration. `tools/opencode.py` defaults to free Big Pickle with fixed main/small models, a one-model whitelist and public authentication; the public preset is applied last as inline configuration. Optional ChatGPT mode leaves authentication/model selection to OpenCode's `/connect` and `/models`; API mode supplies the local key. The helper does not transfer Codex credentials. Neither interactive launcher is registered in `Engine.adapter`, and neither automatically imports code into office materials. Local config checks do not establish live provider access. See [CODEX.md](CODEX.md) and [API provider connections](PROVIDERS.md).
 
 ## Events and recovery
 

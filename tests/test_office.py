@@ -613,6 +613,31 @@ class RuntimeCase(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(output["example"])
         self.assertEqual(output["content"], "Ответ реального протокола")
 
+    async def test_codex_stage_persists_output_and_hands_it_to_next_role(self):
+        task = self.make_task([FIRST, SECOND])
+        payloads = []
+        async def runner(command, directory, env, timeout, prompt=None):
+            self.assertNotIn("SECRET-DO-NOT-LEAK", str(env))
+            if command[1:3] == ["login", "status"]:
+                return 0, b"Logged in using ChatGPT", b""
+            payloads.append(json.loads(prompt))
+            text = "Codex stage " + str(len(payloads))
+            events = [{"type": "item.completed", "item": {"type": "agent_message", "text": text}}, {"type": "turn.completed", "usage": {"input_tokens": 15, "cached_input_tokens": 10, "output_tokens": 5}}]
+            return 0, ("\n".join(json.dumps(event) for event in events)).encode(), b""
+        self.engine.adapter["model"] = ModelAdapter()
+        with patch.dict(os.environ, {**MODEL_ENV, "OFFICE_MODEL_PROTOCOL": "codex_cli", "OFFICE_CODEX_TIMEOUT_SECONDS": "300"}), patch("backend.runtime.find_codex", return_value="codex"), patch("backend.codex.find_cli", return_value="codex"), patch("backend.codex.run_cli", side_effect=runner):
+            self.engine.start(task["id"], "model")
+            finished = await self.finish(task)
+        self.assertEqual(len(payloads), 2)
+        self.assertEqual(payloads[0]["instructions_md"], self.store.get("profiles", FIRST)["instructions_md"])
+        self.assertEqual(payloads[1]["instructions_md"], self.store.get("profiles", SECOND)["instructions_md"])
+        self.assertIn("Codex stage 1", json.dumps(payloads[1]["materials"]))
+        for stage in finished["stages"]:
+            output = self.store.get("materials", stage["output_id"])
+            self.assertFalse(output["example"])
+            self.assertEqual(stage["usage"]["total_tokens"], 20)
+        self.assertNotIn("SECRET-DO-NOT-LEAK", json.dumps(self.store.events("project-main")))
+
     async def test_claude_native_stage_persists_text_usage_and_handoff(self):
         task = self.make_task([FIRST])
         def responder(request):

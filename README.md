@@ -16,18 +16,18 @@
   <img src="https://img.shields.io/badge/Scope-Local%20MVP-14B8A6?style=flat-square&amp;labelColor=555555" alt="Local MVP" />
   <img src="https://img.shields.io/badge/Repository-Private-181717?style=flat-square&amp;labelColor=555555&amp;logo=github&amp;logoColor=white" alt="Private repository" />
   <br />
-  <img src="https://img.shields.io/badge/Backend%20tests-63%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="63 backend tests passed" />
+  <img src="https://img.shields.io/badge/Backend%20tests-84%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="84 backend tests passed" />
   <img src="https://img.shields.io/badge/Browser%20checks-42%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="42 browser checks passed" />
   <a href="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml"><img src="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI workflow status" /></a>
 
-  <p><a href="#quick-start">Quick start</a> · <a href="#connect-models-and-opencode">Connect models</a> · <a href="#screenshots">Screenshots</a> · <a href="docs/ARCHITECTURE.md">Architecture</a> · <a href="docs/API.md">API</a> · <a href="docs/TESTING.md">Testing</a></p>
+  <p><a href="#quick-start">Quick start</a> · <a href="#start-with-codex-and-opencode">Connect models</a> · <a href="#screenshots">Screenshots</a> · <a href="docs/ARCHITECTURE.md">Architecture</a> · <a href="docs/API.md">API</a> · <a href="docs/TESTING.md">Testing</a></p>
 </div>
 
 **AI Office** is a local web application for organizing specialist AI roles into a visible, controlled team. It brings the Agency Agents catalog, project membership, staged tasks, materials, permissions, event history, and owner approvals into one workspace.
 
 The application interface, role names, and role descriptions are in Russian. Repository documentation and programming identifiers are in English. Original catalog records and Markdown instructions are retained as source material with SHA-256 provenance; localized presentation is stored separately.
 
-> The default executor is a deterministic demonstration adapter. It creates clearly marked examples without calling a model. Server-configured OpenAI-compatible Chat Completions and native Claude Messages protocols are implemented and tested with simulated HTTP transports; live provider access is a separate setup step.
+> Fresh launches use a clearly marked demonstration until real execution is enabled. The primary real workflow uses Codex CLI with saved ChatGPT login. OpenAI-compatible Chat Completions and Claude Messages remain API alternatives; OpenCode is a separate coding session.
 
 ---
 
@@ -134,13 +134,83 @@ The port is published only on `127.0.0.1:4197`; SQLite persists in the `office-d
 
 A manual step first starts a stage, and the next step completes it and hands over its output. Reset creates a new run while retaining completed materials and previous run history. The main office has 282 participants, but only the eight assigned specialists execute this demonstration.
 
-## Connect models and OpenCode
+## Start with Codex and OpenCode
 
-The recommended OpenAI setup uses **GPT-6.1 Sol** for development and **GPT-6 Luna** for lightweight OpenCode work. An alternative direct **Claude Platform** preset uses **Claude Sonnet 5.5 / Haiku 5.5**. **ProxyAPI** provides a separate preset for OpenAI models through its gateway.
+**Codex is the primary setup.** It uses saved ChatGPT login for office stages and a separate interactive coding session. **OpenCode defaults to free Big Pickle**, with optional ChatGPT/API access available separately. Claude Platform remains an alternative for later.
+
+### 1. Check Codex login
+
+```powershell
+codex --version
+codex login status
+```
+
+Use Codex CLI 0.147.0+. If not logged in, run `codex login`, complete ChatGPT sign-in in the browser, then check status again. The application does not copy CLI credentials into `.env`.
+
+### 2. Configure and start the office
+
+```powershell
+if (-not (Test-Path -LiteralPath '.env')) {
+    Copy-Item -LiteralPath '.env.example' -Destination '.env'
+}
+notepad .env
+```
+
+Set:
+
+```dotenv
+OFFICE_ENABLE_MODEL=true
+OFFICE_MODEL_PROTOCOL=codex_cli
+OFFICE_MODEL_NAME=
+OFFICE_CODEX_TIMEOUT_SECONDS=300
+```
+
+Codex office stages require saved ChatGPT login, not `OFFICE_MODEL_KEY`. A blank model field uses the CLI default. Preserve your existing storage settings when switching an existing env file. Then run:
+
+```powershell
+.\.venv\Scripts\python.exe tools/codex.py --check
+.\START.cmd
+```
+
+Open **http://127.0.0.1:4197/**, select **Настройки → Подключённая модель**, create a short one-stage task and start it explicitly. Codex returns Russian Markdown that the office stores and passes to the next role. Account model availability and Codex usage limits still apply.
+
+### 3. Use Codex for customer code
+
+Office stages produce materials. To edit actual project files and run tests, open a separate interactive session in an existing customer directory:
+
+```powershell
+.\.venv\Scripts\python.exe tools/codex.py --start --project 'D:\Projects\customer-app'
+```
+
+This uses workspace-write with on-request approvals. Office text stages use a temporary read-only directory with shell/apps/plugins/browser capabilities disabled.
+
+### 4. Connect OpenCode as another coding tool
+
+The default env template selects `OPENCODE_AUTH=free`, `OPENCODE_PROVIDER=opencode`, and **`opencode/big-pickle`** for both main and small models. No account key or ChatGPT login is required for this public free route. Run:
+
+```powershell
+npm install -g opencode-ai
+.\.venv\Scripts\python.exe tools/opencode.py --check
+.\.venv\Scripts\python.exe tools/opencode.py --start --project 'D:\Projects\customer-app'
+```
+
+Skip installation if the CLI is already available. The helper forces Big Pickle, restricts the provider's model picker to it, and applies the public free preset after global/project configuration. It supplies the public `public` sentinel instead of an account key and asks before edits/shell commands. Both main and internal small-model work use Big Pickle; there is no paid fallback in this preset.
+
+[OpenCode Zen](https://opencode.ai/docs/zen/) currently lists Big Pickle as free for a limited period and states that collected data may be used to improve it. Review this condition before sending confidential customer files. Free availability and service limits can change.
+
+Optional ChatGPT browser-login and API-key modes remain in [the complete guide](docs/CODEX.md). Interactive OpenCode sessions remain separate from automatic office execution.
+
+See **[the complete Codex and OpenCode launch guide](docs/CODEX.md)** for installation, safe checks, model selection, limits and Linux/macOS commands.
+
+<a id="connect-models-and-opencode"></a>
+
+## Alternative API providers
+
+Direct API office calls remain optional. The OpenAI setup uses **GPT-6.1 Sol**, with **GPT-6 Luna** for lightweight OpenCode work. The **Claude Platform** preset uses **Claude Sonnet 5.5 / Haiku 5.5**. **ProxyAPI** provides a separate preset for OpenAI models through its gateway.
 
 | Connection | Local env template | Office request model |
 | --- | --- | --- |
-| Direct OpenAI | [`.env.example`](.env.example) | `gpt-6.1-sol` |
+| Direct OpenAI | [`config/openai.env.example`](config/openai.env.example) | `gpt-6.1-sol` |
 | OpenAI via ProxyAPI | [`config/proxyapi.env.example`](config/proxyapi.env.example) | `openai/gpt-6.1-sol` |
 | Direct Claude Platform | [`config/claude.env.example`](config/claude.env.example) | `claude-sonnet-5-5` |
 
@@ -150,14 +220,14 @@ The recommended OpenAI setup uses **GPT-6.1 Sol** for development and **GPT-6 Lu
 - **ProxyAPI:** create a key in [ProxyAPI Console](https://console.proxyapi.ru/) and check its balance/model catalog.
 - **Claude:** sign in to [Claude Platform](https://platform.claude.com/), select the intended organization, create a key in its API-key settings and check API billing/model access.
 
-Store the selected provider's key in **`OFFICE_MODEL_KEY` in your local `.env`**. The office and optional OpenCode launcher use that same field. Keep the checked-in examples empty. Codex/ChatGPT/Claude chat subscriptions are separate access paths; the office uses provider API credentials.
+Store the selected provider's key in **`OFFICE_MODEL_KEY` in your local `.env`**. API office calls and OpenCode's `api_key` mode use that field. Keep the checked-in examples empty. These API presets have separate billing from the primary Codex/ChatGPT workflow.
 
 ### 2. Prepare `.env`
 
 From the repository root, choose one template and copy it only when `.env` does not already exist:
 
 ```powershell
-$providerTemplate = '.env.example'  # OpenAI
+$providerTemplate = 'config/openai.env.example'  # Direct OpenAI API
 # ProxyAPI: 'config/proxyapi.env.example'
 # Claude:   'config/claude.env.example'
 if (-not (Test-Path -LiteralPath '.env')) {
@@ -216,6 +286,7 @@ flowchart LR
     Engine --> Permissions[Permission and approval checks]
     Permissions --> Demo[DemoAdapter]
     Permissions --> Model[ModelAdapter]
+    Model --> Codex[Saved ChatGPT Codex CLI for text stages]
     Model --> Provider[Configured Chat Completions or Claude Messages endpoint]
     Demo --> Results[Materials and handoff events]
     Model --> Results
@@ -245,7 +316,9 @@ Run browser tests against a running server. They create separate QA projects and
 
 | Evidence | Recorded result |
 | --- | --- |
-| Backend unit, integration, and security contracts | 63 passed, including provider and Russian-presentation regressions |
+| Backend unit, integration, and security contracts | 84 passed, including Codex, provider and Russian-presentation regressions |
+| Real Codex text-stage smoke | Passed with saved ChatGPT login and CLI default model; reported token usage captured |
+| Real OpenCode Big Pickle smoke | Passed through the public free endpoint; CLI-reported cost zero |
 | Original browser flow | 20 passed |
 | Complete 282-member browser flow | 15 passed |
 | Russian presentation browser regressions | 7 passed |
@@ -253,7 +326,7 @@ Run browser tests against a running server. They create separate QA projects and
 | Dependency audits | Zero known npm and Python vulnerabilities in the recorded audit |
 | Responsive layout | Desktop 1440 px and mobile 390 / 320 px checked |
 
-The provider update reran backend/build checks; browser and accessibility results are from the earlier full UI validation. Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend tests, empty-key provider checks, documentation/publication checks, dependency audits, and Compose configuration on GitHub. Browser checks are reproducible locally; see [testing](docs/TESTING.md).
+The Codex/OpenCode update reran backend/build checks; browser and accessibility results are from the earlier full UI validation. Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend tests, empty-key provider checks, documentation/publication checks, dependency audits, and Compose configuration on GitHub. Browser checks are reproducible locally; see [testing](docs/TESTING.md).
 
 ## Project structure
 
@@ -265,12 +338,12 @@ ai-office/
 │   ├── tests/               # Playwright workflows and screenshot capture
 │   └── dist/                # Included production UI bundle
 ├── catalog/                 # Original profiles, JSON catalog, starter team
-├── config/                  # ProxyAPI/Claude env examples and OpenCode JSON presets
+├── config/                  # API env alternatives and OpenCode JSON presets
 ├── docs/                    # Architecture, API, setup, testing, screenshots and banner
 ├── tests/                   # Backend unit, integration and security contracts
 ├── output/                  # Recorded validation artifacts
 ├── reference/               # Supplied visual reference frames
-├── tools/                   # Archive builder, repository checks and OpenCode launcher
+├── tools/                   # Archive builder, repository checks, Codex/OpenCode launchers
 ├── .github/workflows/       # Continuous integration
 ├── .env.example             # Safe server-side configuration template
 ├── START.cmd / INSTALL.cmd  # English Windows entry points
@@ -282,7 +355,7 @@ ai-office/
 
 This is a local application for one owner. It does not yet provide multi-user authentication, public hosting, provider billing, vector retrieval, or external tool execution. Do not expose the API publicly with the current configuration.
 
-The model adapter has transport-level test coverage. Provider credentials, account access, actual model output, live token billing, and external integrations have not been live-tested. Demo examples are identified explicitly; failures never silently switch a model run to demo content.
+The model adapter has transport-level test coverage, and a real Codex text response through saved ChatGPT login was verified. A real Big Pickle text response through OpenCode also passed with reported cost zero. Direct API providers, optional OpenCode OAuth/API login, actual customer-project tool execution and external integrations remain unverified live. Reported token counters are not a monetary bill. Demo examples are identified explicitly; failures never silently switch a model run to demo content.
 
 ## Documentation
 
@@ -290,6 +363,7 @@ The model adapter has transport-level test coverage. Provider credentials, accou
 | --- | --- |
 | [Architecture](docs/ARCHITECTURE.md) | Components, data boundaries, lifecycle, concurrency, and event flow |
 | [API](docs/API.md) | Routes, request examples, actions, response errors, and SSE |
+| [Codex and OpenCode](docs/CODEX.md) | Primary saved-login workflow and customer coding sessions |
 | [Configuration](docs/CONFIGURATION.md) | Environment variables, model setup, storage, Docker, and troubleshooting |
 | [Provider connections](docs/PROVIDERS.md) | OpenAI, ProxyAPI, Claude Platform, local keys and optional OpenCode sessions |
 | [Development](docs/DEVELOPMENT.md) | Frontend rebuilds, extension points, CI, and contribution workflow |
@@ -302,7 +376,7 @@ The model adapter has transport-level test coverage. Provider credentials, accou
 ## Roadmap
 
 - Add authentication and project authorization before any shared deployment.
-- Validate one real model provider with an explicit account and spending policy.
+- Compare providers on real customer tasks with an explicit account and spending policy.
 - Implement external tool adapters with server-enforced capabilities and independent contract tests.
 - Add database migration/versioning and configurable retention before long-lived shared use.
 - Add manual screen-reader testing and user research beyond automated accessibility checks.

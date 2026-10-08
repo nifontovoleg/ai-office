@@ -1,0 +1,26 @@
+{
+  "checked_on": "2026-10-08",
+  "transport": "opencode_cli",
+  "model": "opencode/big-pickle",
+  "authentication": "public_free_endpoint",
+  "status": "passed",
+  "content": "Подключение Big Pickle работает.",
+  "tokens": [
+    {
+      "total": 13758,
+      "input": 13662,
+      "output": 9,
+      "reasoning": 23,
+      "cache": {
+        "write": 0,
+        "read": 64
+      }
+    }
+  ],
+  "reported_cost": [
+    0
+  ],
+  "customer_files_used": false,
+  "tool_permissions": "ask",
+  "tool_events": 0
+}

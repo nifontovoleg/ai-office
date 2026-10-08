@@ -14,10 +14,12 @@ Copy `.env.example` to `.env` when configuring a provider. Keep `.env` out of Gi
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `OFFICE_ENABLE_MODEL` | `false` | Explicitly permit configured provider calls |
-| `OFFICE_MODEL_PROTOCOL` | `chat_completions` | `chat_completions` or native `anthropic_messages` |
-| `OFFICE_MODEL_URL` | Example Chat Completions URL in `.env.example` | Full endpoint, not only a base URL |
-| `OFFICE_MODEL_NAME` | `gpt-6.1-sol` in the OpenAI template | A model available to your provider account |
+| `OFFICE_MODEL_PROTOCOL` | `codex_cli` in `.env.example`; legacy fallback `chat_completions` | Saved-ChatGPT Codex CLI, Chat Completions or native `anthropic_messages` |
+| `OFFICE_MODEL_URL` | Empty in the primary template | Full HTTP endpoint for API transports; unused by Codex |
+| `OFFICE_MODEL_NAME` | Empty for Codex; provider ID in API presets | A model available to your account; blank uses the default in Codex mode |
 | `OFFICE_MODEL_KEY` | Empty | Server-side provider API key |
+| `OFFICE_CODEX_PATH` | CLI discovered in PATH | Optional absolute native Codex executable path |
+| `OFFICE_CODEX_TIMEOUT_SECONDS` | `300` | Codex stage timeout, `30..1800` seconds |
 | `OFFICE_MODEL_MAX_TOKENS` | `8192` | Anthropic output limit, `128..128000`; not sent to Chat Completions |
 | `OFFICE_MODEL_TIMEOUT_SECONDS` | `120` | HTTP timeout in seconds, `1..600` |
 | `OFFICE_DATA_DIR` | `./data` | Directory containing `office.db` |
@@ -25,24 +27,27 @@ Copy `.env.example` to `.env` when configuring a provider. Keep `.env` out of Gi
 | `OFFICE_ALLOWED_ORIGINS` | Built-in localhost origins | Additional comma-separated allowed origins; does not change allowed Host values |
 | `OFFICE_URL` | `http://127.0.0.1:4197` | Browser test target only |
 | `OFFICE_BROWSER` | `msedge` | Playwright browser channel for checks |
+| `OPENCODE_AUTH` | `free` in the primary template; `api_key` in API presets | Big Pickle public free route, optional `chatgpt` browser login or API-key mode; legacy helper default is `api_key` |
+| `OPENCODE_PROVIDER` | `opencode` | OpenCode Zen, OpenAI, ProxyAPI or Anthropic; ChatGPT mode requires OpenAI |
+| `OPENCODE_BASE_URL` | `https://opencode.ai/zen/v1` for free mode | Free mode fixes the official endpoint; API mode uses its provider base |
+| `OPENCODE_MODEL` / `OPENCODE_SMALL_MODEL` | Both `opencode/big-pickle` | Fixed to Big Pickle in free mode; API preset IDs in API mode; ChatGPT mode uses `/models` |
 
-Path defaults resolve relative to the application source root. Model variables must be configured together; the default URL alone does not connect a model.
+Path defaults resolve relative to the application source root. API transports need URL/name/key together. Codex mode requires the CLI and saved ChatGPT login; it does not use the API key field.
 
-## Optional model setup
+## Primary Codex setup
 
 ```dotenv
 OFFICE_ENABLE_MODEL=true
-OFFICE_MODEL_URL=https://api.openai.com/v1/chat/completions
-OFFICE_MODEL_PROTOCOL=chat_completions
+OFFICE_MODEL_PROTOCOL=codex_cli
 OFFICE_MODEL_NAME=gpt-6.1-sol
-OFFICE_MODEL_KEY=
+OFFICE_CODEX_TIMEOUT_SECONDS=300
 ```
 
-Fill the empty key field in the ignored local `.env`, restart the server, select the connected-model executor in settings, then explicitly start a task. The subsequent provider call can consume the provider's balance. This repository does not include credentials or a provider budget system.
+Complete `codex login` with ChatGPT, restart the server, select the connected-model executor in settings, then explicitly start a task. This uses account model availability and Codex limits. The CLI is run in a temporary read-only text-stage workspace; coding sessions are launched separately with `tools/codex.py --start`. See [CODEX.md](CODEX.md).
 
-The adapter accepts HTTPS; HTTP is allowed only for a loopback provider. URLs containing user information and redirects are rejected. It supports [Chat Completions](https://developers.openai.com/api/reference/resources/chat) and native [Claude Messages](https://platform.claude.com/docs/en/get-started), supplies only the current role/context, and requests Markdown output. No browser or shell commands are executed.
+The alternative HTTP adapter accepts HTTPS; HTTP is allowed only for a loopback provider. URLs containing user information and redirects are rejected. It supports [Chat Completions](https://developers.openai.com/api/reference/resources/chat) and native [Claude Messages](https://platform.claude.com/docs/en/get-started), supplies only the current role/context, and requests Markdown output.
 
-Use [the provider guide](PROVIDERS.md) for complete OpenAI, ProxyAPI and Claude Platform setup. It documents the `OPENCODE_*` variables, tracked JSON presets and the optional `tools/opencode.py` launcher. Those variables configure a separate CLI session, not the office's stage executor.
+Use [the provider guide](PROVIDERS.md) for optional OpenAI, ProxyAPI and Claude Platform setup. `config/openai.env.example` is the direct OpenAI office preset. `OPENCODE_*` variables and `tools/opencode.py` configure a separate OpenCode coding session. Its primary mode selects free Big Pickle without an account key/login. Optional ChatGPT browser-login and API-key modes can be configured while office stages remain on Codex. See [CODEX.md](CODEX.md).
 
 ## Storage and backup
 
@@ -58,6 +63,8 @@ docker compose up --build
 ```
 
 The Compose service uses a named volume, loopback-only published port, dropped capabilities and `no-new-privileges`. The image builds the UI in Node and runs Python as a non-root user. A host-side `.env` supplies the configured values through Compose environment interpolation.
+
+The standard image does not contain Codex CLI or host ChatGPT login credentials. Use native host execution for `codex_cli`, or select an API preset for Docker.
 
 ## Troubleshooting
 

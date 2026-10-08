@@ -17,7 +17,9 @@ This record describes actual checks of the local AI Office implementation and th
 
 | Check | Result |
 | --- | --- |
-| Backend unit, integration and security contracts | 63 passed, including provider and Russian-presentation regressions |
+| Backend unit, integration and security contracts | 84 passed, including Codex, OpenCode/provider and Russian-presentation regressions |
+| Real Codex text-stage smoke | Passed with saved ChatGPT login and CLI default; Russian text and token counters captured |
+| Real OpenCode Big Pickle smoke | Passed with public free authentication; text returned, no tool events, CLI-reported cost `0` |
 | TypeScript and Vite production build | Passed |
 | Main browser workflow | 20 checks passed |
 | Complete 282-member workflow | 15 checks passed |
@@ -31,11 +33,13 @@ This record describes actual checks of the local AI Office implementation and th
 
 The Russian UI update includes localized role names/descriptions, Russian search, labels and task defaults while preserving source records and custom user settings. Current logs supersede earlier counts in screenshots or historical descriptions.
 
-The October 8 provider update added 18 tests for native Claude Messages, stage persistence and OpenCode configuration/launch boundaries. All 63 backend tests passed without live credentials. The existing browser/accessibility rows describe the earlier full UI validation; those browser suites were not rerun for the provider update. The Russian connection hint was updated and the production bundle was rebuilt.
+The October 8 Codex/OpenCode update brings the backend suite to 84 tests. Offline tests cover both API protocols and CLI dispatch, saved-login requirements, startup notices, restricted tool handling, usage, cancellation and stage handoffs. OpenCode tests cover free/ChatGPT/API modes, fixed Big Pickle main/small models, whitelist/public authentication and credential boundaries. All tests passed without live provider requests. Separate real Codex and OpenCode Big Pickle text smokes also passed; they are not part of the offline suite. The existing browser/accessibility rows describe the earlier full UI validation; those browser suites were not rerun for this connection update. The Russian connection hint was updated and the production bundle was rebuilt.
 
 ## Evidence
 
 - `output/backend-tests.txt`: final backend test output.
+- `output/codex-smoke.json`: sanitized real Codex response, saved-login transport, CLI-default model selection and reported token usage; no credentials or authentication files.
+- `output/big-pickle-smoke.json`: real OpenCode CLI text response from `opencode/big-pickle`, public free route, reported tokens/cost and zero tool events.
 - `output/playwright/browser-report.json`: main workflow, axe, console and network results.
 - `output/playwright/localization-report.json`: Russian labels/descriptions/search, source language and narrow-screen regression.
 - `output/playwright/all-agents-report.json`: complete-team, executor search, large departments and page-removal regression.
@@ -46,7 +50,11 @@ The October 8 provider update added 18 tests for native Claude Messages, stage p
 
 ## Scope and limits
 
-The local application uses **DemoAdapter**. No paid provider call was performed. ModelAdapter's Chat Completions and native Claude Messages protocols are tested with HTTP MockTransport for payload isolation, reported usage, safe errors, result persistence and absence of demo fallback. Empty-key provider presets and the OpenCode helper were checked locally; OpenCode launch behavior was tested with a mocked subprocess. Provider account access, real model output, billing and actual OpenCode model/tool execution remain unverified. OpenCode is a separate CLI session and is not registered as an office stage executor.
+Fresh source launches use **DemoAdapter** until the owner explicitly enables and selects a real executor. The primary template now uses `codex_cli`. The live smoke on October 8 invoked `ModelAdapter` with saved Codex ChatGPT login and the CLI default, returned a Russian three-item QA checklist, and reported 15,606 input / 74 output tokens. It used account allowance; no API key was supplied. The recorded cost remains unknown. This proves text transport, not customer-project coding, automatic tool execution or unlimited account access.
+
+The separate Big Pickle smoke ran the installed OpenCode CLI 1.18.18 in an empty temporary folder, using public free authentication, the built-in coding agent and tool confirmation. It returned a short Russian confirmation without tool events and reported cost `0`. An initial all-tools-denied smoke received Zen `403`; using the normal confirmation policy resolved it. This demonstrates a current response, not future uptime, unchanged free pricing or customer-project development. Big Pickle's documented free period is limited and collected data may be used to improve the model.
+
+ModelAdapter's Chat Completions and native Claude Messages protocols are tested with HTTP MockTransport for payload isolation, reported usage, safe errors, result persistence and absence of demo fallback. Empty-key presets and CLI helpers were checked locally; interactive launch behavior was tested with mocked subprocesses. Direct API provider accounts/billing, optional OpenCode OAuth/API login, actual customer-project tool execution and interactive customer coding remain unverified. OpenCode is a separate CLI session and is not registered as an office stage executor.
 
 The local Docker Engine was unavailable; the image/container was not locally built or run. Python plus the built React interface was tested separately. GitHub CI results are recorded by the repository's Actions page after publication.
 

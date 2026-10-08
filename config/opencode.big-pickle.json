@@ -1,0 +1,22 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "enabled_providers": ["opencode"],
+  "model": "opencode/big-pickle",
+  "small_model": "opencode/big-pickle",
+  "share": "disabled",
+  "permission": {
+    "edit": "ask",
+    "bash": "ask",
+    "external_directory": "ask"
+  },
+  "provider": {
+    "opencode": {
+      "whitelist": ["big-pickle"],
+      "options": {
+        "baseURL": "https://opencode.ai/zen/v1",
+        "apiKey": "public",
+        "timeout": 120000
+      }
+    }
+  }
+}

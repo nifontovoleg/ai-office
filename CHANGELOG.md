@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Make saved-ChatGPT Codex CLI the primary local model workflow and keep Claude/OpenAI API presets as alternatives.
+- Add restricted Codex text-stage execution, safe JSON/usage handling and separate interactive Codex/OpenCode launch instructions.
+- Add OpenCode ChatGPT-login mode with a live model picker, keeping API-key presets optional.
+- Record a successful real Codex text response with saved ChatGPT login and reported usage.
+- Default OpenCode to free Big Pickle for main/small models, with public auth and no paid fallback; record a successful live CLI text smoke with reported cost zero.
+
 - Add empty-key OpenAI, ProxyAPI and Claude Platform env presets and a detailed connection guide.
 - Add native Anthropic Messages authentication, text output and normalized token usage to the model adapter.
 - Add an explicit OpenCode launcher with Sol/Luna and Sonnet/Haiku configurations, local checks and credential-boundary tests.
@@ -17,4 +23,4 @@
 - Add preserved custom names, source integrity and pagination regressions.
 - Add English repository documentation, branded badges, screenshots, Windows launchers, contribution/security guidance and continuous integration.
 
-This is the initial repository publication, not a claim of a public deployment or a live provider integration.
+This is a local application with a verified Codex text transport, not a public deployment or a complete external-tool development pipeline.

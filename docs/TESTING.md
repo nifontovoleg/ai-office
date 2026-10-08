@@ -10,17 +10,21 @@ The suite creates temporary SQLite databases and uses ASGITransport for API test
 
 Russian presentation regressions cover all catalog IDs, nonempty Russian names/descriptions, unchanged source fields and preservation of customized member configuration.
 
-Provider regressions cover native Claude authentication, separate system/user context, text blocks, cache token accounting, token-limit errors, malformed responses and integration with stage persistence/handoffs. OpenCode helper tests verify empty-key defaults, process-env precedence, provider/model namespaces, safe diagnostics and explicit launch behavior. No CLI model execution is performed by those tests.
+Provider regressions cover native Claude authentication, separate system/user context, text blocks, cache token accounting, token-limit errors, malformed responses and integration with stage persistence/handoffs. Codex tests simulate saved login, stdin context, restricted command construction, startup notices, tool/failed-stream rejection, token counters, timeout/cancellation cleanup and two-stage result persistence. OpenCode helper tests verify free/ChatGPT/API modes, fixed Big Pickle main/small models, a one-model whitelist, public auth, credential stripping, empty-key defaults, process-env precedence, provider/model namespaces, safe diagnostics and explicit launch behavior. No live CLI model execution is performed by those tests.
 
 Check each tracked preset locally without contacting a provider:
 
 ```powershell
 .\.venv\Scripts\python.exe tools/opencode.py --check --env-file .env.example
+.\.venv\Scripts\python.exe tools/opencode.py --check --env-file config/openai.env.example
 .\.venv\Scripts\python.exe tools/opencode.py --check --env-file config/proxyapi.env.example
 .\.venv\Scripts\python.exe tools/opencode.py --check --env-file config/claude.env.example
+.\.venv\Scripts\python.exe tools/codex.py --check --env-file .env.example
 ```
 
-For a clean terminal with no provider overrides, each empty-key example reports `key_present=false` and `provider_access_verified=false`. A missing CLI is allowed for a configuration check. See [PROVIDERS.md](PROVIDERS.md) for the explicit installation/launch steps.
+For a clean terminal with no provider overrides, OpenCode examples report `key_present=false` and `provider_access_verified=false`. In ChatGPT mode, readiness means launcher availability; saved OpenCode login remains unverified. The Codex helper runs only `login status`, with captured output, and does not infer. A missing CLI is allowed for a configuration check. See [CODEX.md](CODEX.md) and [PROVIDERS.md](PROVIDERS.md) for explicit installation/launch steps.
+
+A separate live Codex text-stage smoke passed through `ModelAdapter` using saved ChatGPT login and the default CLI model. Its sanitized response and token counters are recorded in [output/codex-smoke.json](../output/codex-smoke.json). A real OpenCode CLI Big Pickle text smoke also passed using the public free route and reported cost `0`; see [output/big-pickle-smoke.json](../output/big-pickle-smoke.json). It ran in an empty temporary folder, with tool confirmation and no tool events. These verify text transport, not customer-project coding or optional OpenCode OAuth/API authentication.
 
 ## Browser and accessibility
 

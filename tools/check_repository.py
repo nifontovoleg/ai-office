@@ -41,7 +41,7 @@ blocked = {".venv", ".qa-python", "node_modules", "data", ".repo-prep", "__pycac
 secret_patterns = [r"(?:gh[pousr]_[A-Za-z0-9]{30,}|github_pat_[A-Za-z0-9_]{40,})", r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\s+[A-Za-z0-9+/=\r\n]{40,}-----END (?:RSA |EC |OPENSSH )?PRIVATE KEY-----", r"\bAKIA[0-9A-Z]{16}\b", r"\bsk-proj-[A-Za-z0-9_-]{40,}\b", r"\bsk-ant-[A-Za-z0-9_-]{30,}\b"]
 for name in paths:
     path = Path(name)
-    if blocked.intersection(path.parts) or (path.name.startswith(".env") and path.name != ".env.example"):
+    if blocked.intersection(path.parts) or path.name == "auth.json" or (path.name.startswith(".env") and path.name != ".env.example"):
         errors.append(f"Local-only file staged: {name}")
     if path.suffix.lower() in {".png", ".jpg", ".jpeg", ".gif", ".ico"}:
         continue
