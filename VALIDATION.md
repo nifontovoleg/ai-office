@@ -12,23 +12,26 @@ This record describes actual checks of the local AI Office implementation and th
 - Custom task goal, priority, ordered named stages, materials and completion criteria persist across reload.
 - Explicit autonomy/capabilities, cancellation, revoked export rights, scheduled start, locks and atomic result/event commit.
 - Unique events, SSE replay, Last-Event-ID, reconnect snapshots and restart without silent provider retries.
+- Project files and links at creation or later, readable PDF/DOCX/text extraction, byte-exact original persistence, media decoding and selected source handoff.
+- Partial upload retries reuse the created project; saving text and files in either order preserves pending drafts.
 
 ## Recorded results
 
 | Check | Result |
 | --- | --- |
-| Backend unit, integration and security contracts | 84 passed, including Codex, OpenCode/provider and Russian-presentation regressions |
+| Backend unit, integration and security contracts | 106 passed, including 22 attachment/parser regressions |
 | Real Codex text-stage smoke | Passed with saved ChatGPT login and CLI default; Russian text and token counters captured |
 | Real OpenCode Big Pickle smoke | Passed with public free authentication; text returned, no tool events, CLI-reported cost `0` |
 | TypeScript and Vite production build | Passed |
 | Main browser workflow | 20 checks passed |
 | Complete 282-member workflow | 15 checks passed |
 | Russian-presentation workflow | 7 checks passed |
-| axe accessibility | Eleven selected states, zero violations |
+| Project files/links workflow | 18 checks passed, including real PDF/DOCX, browser-decoded MP4 and partial failures |
+| axe accessibility | Nineteen selected states, zero violations |
 | Browser exceptions/unexpected network failures | Zero |
 | Desktop 1440 px and mobile 390 / 320 px | No page-level horizontal overflow; long forms remain scrollable |
 | npm audit | Zero known vulnerabilities in the recorded scan |
-| pip-audit | 17 runtime dependencies, zero known vulnerabilities in the recorded scan |
+| pip-audit | Zero known vulnerabilities in the recorded runtime dependency scan |
 | Docker Compose | `docker compose config --quiet` passed |
 
 The Russian UI update includes localized role names/descriptions, Russian search, labels and task defaults while preserving source records and custom user settings. Current logs supersede earlier counts in screenshots or historical descriptions.
@@ -37,12 +40,15 @@ The October 8 Codex/OpenCode update brings the backend suite to 84 tests. Offlin
 
 ## Evidence
 
+The October 8 materials update reran all four browser suites on an isolated Edge server with models disabled: 20 + 15 + 7 + 18 = 60 checks. It also passed all 106 backend tests. The new security cases confirm streamed oversize cleanup, file/link project scope, unsafe-format rejection, selected document text reaching a persisted stage input, parser credential stripping, PDF/ZIP/XML resource bounds, event rollback, and actual Windows child timeout/cancellation. TypeScript/Vite and Compose validation passed. These are offline checks of the feature and do not trigger customer model calls.
+
 - `output/backend-tests.txt`: final backend test output.
 - `output/codex-smoke.json`: sanitized real Codex response, saved-login transport, CLI-default model selection and reported token usage; no credentials or authentication files.
 - `output/big-pickle-smoke.json`: real OpenCode CLI text response from `opencode/big-pickle`, public free route, reported tokens/cost and zero tool events.
 - `output/playwright/browser-report.json`: main workflow, axe, console and network results.
 - `output/playwright/localization-report.json`: Russian labels/descriptions/search, source language and narrow-screen regression.
 - `output/playwright/all-agents-report.json`: complete-team, executor search, large departments and page-removal regression.
+- `output/playwright/attachments-report.json`: creation/later materials, extraction, previews, drafts, retries, responsive layout and axe results.
 - `output/npm-audit.json`, `output/python-audit.json`: dependency audit snapshots.
 - `tests/SECURITY_REVIEW.md`: source controls and executable security contracts.
 - `docs/screenshots/`: selected rendered desktop/mobile evidence used by the README.
@@ -61,6 +67,8 @@ The local Docker Engine was unavailable; the image/container was not locally bui
 axe checks do not establish full WCAG certification. Manual screen-reader testing and research with actual users were not conducted. Security source review and dependency audits are not a penetration test.
 
 The application remains a single-owner local MVP without authentication or a public production deployment. See [SECURITY.md](SECURITY.md).
+
+Attached images/video/audio are saved and previewed where browser codecs support them. The text executor receives a reference and metadata; visual analysis, OCR, transcription and captions are not performed. URLs are not fetched. Readable extraction is bounded and may be partial; originals remain available. No live model call was required to validate this materials update.
 
 ## Reproduction
 

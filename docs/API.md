@@ -20,6 +20,10 @@ Base URL: `http://127.0.0.1:4197`. The running application's `/docs` and `/opena
 | GET | `/api/tasks/{task_id}` | Full task detail and stage input/output references |
 | POST | `/api/tasks/{task_id}/action` | Start, play, step, approve, reject, pause, cancel or reset |
 | POST | `/api/projects/{project_id}/materials` | Add a source material |
+| POST | `/api/projects/{project_id}/materials/upload?filename={name}` | Stream one original file, up to 50 MiB, and extract supported text |
+| POST | `/api/projects/{project_id}/materials/link` | Save a validated HTTP/HTTPS reference without fetching it |
+| GET | `/api/projects/{project_id}/materials/{material_id}/file` | Download the exact project-scoped original file |
+| GET | `/api/projects/{project_id}/materials/{material_id}/preview` | View a signature-checked raster image, video or audio original |
 | GET | `/api/materials/{material_id}/download` | Download stored content as an attachment |
 | PUT | `/api/settings/mode` | Select `demo` or explicitly configured `model` mode |
 | PUT | `/api/projects/{project_id}/preferences` | Save view, category, graph filters and motion preference |
@@ -40,6 +44,32 @@ Content-Type: application/json
 ```
 
 Use the returned project's `id` in subsequent routes. `project-main` is the primary office.
+
+## Attach a file or URL
+
+The upload is one raw file per request, not multipart. URL-encode the original filename in the query. Streamed size and any declared Content-Length are checked. Repeating the same name/bytes in the same project returns the existing material without another event.
+
+```http
+POST /api/projects/project-main/materials/upload?filename=brief.pdf
+Content-Type: application/octet-stream
+
+<exact PDF bytes>
+```
+
+The response is a source material with an `attachment` object: `filename`, `size`, `mime_type`, `sha256`, `extraction_status` and Russian `extraction_note`. `content` contains extracted text or an explicit reference description. Statuses are `extracted`, `truncated`, `empty`, `unsupported` and `failed`. Heavy extraction is limited to 10 MiB originals, 100,000 characters and a 15-second child timeout. Unsupported/corrupt documents keep their original bytes.
+
+```http
+POST /api/projects/project-main/materials/link
+Content-Type: application/json
+```
+
+```json
+{"title":"Design reference","url":"https://example.com/reference"}
+```
+
+Links require a nonempty title and HTTP/HTTPS host, with no user information or controls. They return `source_url`; their remote content is never fetched. Same URL/title in one project is idempotent.
+
+The scoped `file` route returns the original as an attachment with `nosniff` and an encoded filename. The `preview` route allows only supported signature-checked raster/media formats and rejects active formats with 415. Foreign-project/unknown material files return 404. `/api/materials/{id}/download` still returns the material's Markdown/text representation. No filesystem path is exposed. See [ATTACHMENTS.md](ATTACHMENTS.md) for the user workflow and limitations.
 
 ## Expand a team
 
@@ -118,7 +148,7 @@ Reconnect with `Last-Event-ID` or an `after` sequence cursor. Events include the
 | 400 / 403 | Host or Origin boundary rejection |
 | 404 | Unknown entity or denied static file path |
 | 409 | Invalid action, concurrent completion, hierarchy conflict or an unavailable configured mode |
-| 413 | Catalog import exceeds the 20 MB limit |
+| 413 | Catalog import exceeds 20 MB or file upload exceeds 50 MiB |
 | 415 / 422 | Invalid content type or typed input |
 
 Exact status/detail text is defined by the current handler and schema. Provider error details are sanitized; API responses never return model credentials. API messages intended for the interface are in Russian.

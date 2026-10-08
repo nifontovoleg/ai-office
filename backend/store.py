@@ -63,6 +63,7 @@ class Store:
           FOREIGN KEY(project_id) REFERENCES projects(id));
         CREATE TABLE IF NOT EXISTS materials(id TEXT PRIMARY KEY, project_id TEXT, task_id TEXT, body TEXT NOT NULL,
           FOREIGN KEY(project_id) REFERENCES projects(id));
+        CREATE INDEX IF NOT EXISTS idx_materials_project ON materials(project_id);
         CREATE TABLE IF NOT EXISTS events(seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE,
           project_id TEXT, body TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, body TEXT NOT NULL);
@@ -153,6 +154,34 @@ class Store:
             if commit:
                 self.db.commit()
         return event
+
+    def find_source_duplicate(self, project_id, filename=None, sha256=None, source_url=None, title=None):
+        with self.lock:
+            for material in self.rows("materials", project_id):
+                if material.get("kind") != "source":
+                    continue
+                attachment = material.get("attachment") or {}
+                if filename is not None and attachment.get("filename") == filename and attachment.get("sha256") == sha256:
+                    return material
+                if source_url is not None and material.get("source_url") == source_url and material.get("title") == title:
+                    return material
+        return None
+
+    def add_source_material(self, material):
+        """Deduplicate and persist the source plus its event in one transaction."""
+        with self.lock, self.db:
+            self.get("projects", material["project_id"])
+            attachment = material.get("attachment")
+            duplicate = None
+            if attachment:
+                duplicate = self.find_source_duplicate(material["project_id"], filename=attachment["filename"], sha256=attachment["sha256"])
+            elif material.get("source_url"):
+                duplicate = self.find_source_duplicate(material["project_id"], source_url=material["source_url"], title=material["title"])
+            if duplicate:
+                return duplicate, False
+            self.save("materials", material, commit=False)
+            self.emit(material["project_id"], "material_added", "Добавлен исходный материал: " + material["title"], material_id=material["id"], commit=False)
+            return material, True
 
     def events(self, project_id, after=0, limit=150, replay=False):
         with self.lock:

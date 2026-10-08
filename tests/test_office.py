@@ -13,8 +13,10 @@ from unittest.mock import patch
 import httpx
 
 # Importing ASGI main creates its default app. Isolate even that bootstrap DB.
+# Other suites may have imported Store before this module, so patch its cached path too.
+from backend import store as store_module
 _bootstrap = tempfile.TemporaryDirectory(prefix="office-bootstrap-")
-with patch.dict(os.environ, {"OFFICE_DATA_DIR": _bootstrap.name}):
+with patch.dict(os.environ, {"OFFICE_DATA_DIR": _bootstrap.name}), patch.object(store_module, "DATA_DIR", Path(_bootstrap.name)):
     from backend.main import create_app, app as bootstrap_app
     from backend.runtime import Engine, DemoAdapter, ModelAdapter, DEMO_PLAN, model_config
     from backend.store import Store, ROOT, uid, now

@@ -10,6 +10,8 @@ The suite creates temporary SQLite databases and uses ASGITransport for API test
 
 Russian presentation regressions cover all catalog IDs, nonempty Russian names/descriptions, unchanged source fields and preservation of customized member configuration.
 
+The 22 attachment regressions generate real PDF/DOCX/text fixtures and verify extracted requirements, exact-byte original downloads, persistence, scope, selected stage inputs, duplicate uploads/events, unsafe filenames/active formats, Host/Origin/content-type boundaries, oversized streaming cleanup, URL validation/no fetch, DTD/ZIP/PDF decompression limits, SQLite event rollback and real parser timeout/cancellation. The lifecycle probes launch a short-lived sleeping child and verify prompt cleanup without provider credentials. All 106 backend tests pass without model inference.
+
 Provider regressions cover native Claude authentication, separate system/user context, text blocks, cache token accounting, token-limit errors, malformed responses and integration with stage persistence/handoffs. Codex tests simulate saved login, stdin context, restricted command construction, startup notices, tool/failed-stream rejection, token counters, timeout/cancellation cleanup and two-stage result persistence. OpenCode helper tests verify free/ChatGPT/API modes, fixed Big Pickle main/small models, a one-model whitelist, public auth, credential stripping, empty-key defaults, process-env precedence, provider/model namespaces, safe diagnostics and explicit launch behavior. No live CLI model execution is performed by those tests.
 
 Check each tracked preset locally without contacting a provider:
@@ -38,18 +40,22 @@ npm run build
 npm run test:e2e
 npm run test:all-agents
 npm run test:localization
+npm run test:attachments
 ```
 
-The default browser channel is installed Microsoft Edge in headless mode. Set `OFFICE_BROWSER=chrome` for installed Chrome, or configure another supported channel. `OFFICE_URL` changes the target.
+The default browser channel is installed Microsoft Edge in headless mode. Set `OFFICE_BROWSER=chrome` for installed Chrome, or `OFFICE_BROWSER=chromium` for Playwright's installed Chromium (`npx playwright install chromium`). `OFFICE_URL` changes the target. All four scripts can use the same isolated server on port 4201; the attachments script defaults to that port and requires `OFFICE_ENABLE_MODEL=false` on its target. It uses a real FFmpeg-generated MP4; install `ffmpeg` and make it available on PATH, or set `FFMPEG` to its executable. It generates fixture documents under ignored `.repo-prep/attachment-fixtures/` using the project's Python; set `OFFICE_PYTHON` if its path differs. The other scripts default to port 4197, so set `OFFICE_URL=http://127.0.0.1:4201` for a combined run.
 
 | Script | Coverage |
 | --- | --- |
 | `tests/office.e2e.mjs` | Catalog instruction, dialogs/focus, project isolation, membership edits, map views, ten-stage workflow, approval, task creation, visible model errors, responsive layout |
 | `tests/all-agents.e2e.mjs` | All 282 members, original settings, team pages, role search, executor selection, large departments, repeated bulk import, reload persistence, mobile search, page correction after removal |
 | `tests/localization.e2e.mjs` | Russian profile presentation/search, original source language, executor search and narrow layout |
+| `tests/attachments.e2e.mjs` | Project hints, real PDF/DOCX extraction, image/video decoding, arbitrary files/links, later additions/reload, both text/file draft orders, partial-failure retry, size errors and 320px forms |
 | `tests/final-preview.mjs` | Reproducible screenshots of the primary demo; leaves the final package awaiting owner review |
 
 axe checks WCAG A/AA rules in selected states. A zero-violation result does not establish complete WCAG certification. Real user research and manual screen-reader testing are still outstanding.
+
+GitHub CI runs the backend suite and all four browser scripts with models disabled, separate data and installed Chromium/FFmpeg. Recorded local results: 60 browser checks and 19 selected axe states without violations. See [VALIDATION.md](../VALIDATION.md) for the evidence and limits.
 
 ## Dependency audits
 

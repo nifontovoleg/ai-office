@@ -9,6 +9,7 @@ import httpx
 
 from .store import TOOLS, now, uid
 from .codex import CodexAdapter, find_cli as find_codex
+from .attachments import selected_material
 
 DEMO_PLAN = [
     ("agents-orchestrator", "План работы", "Карта этапов", "## План работы\n\nЦель: лендинг услуги AI-студии.\n\n1. Исследование аудитории и требований.\n2. Структура и дизайн.\n3. Интерфейс и контракт API.\n4. Проверка, исправление и повторная проверка.\n5. Заключение и решение владельца.\n\nКритерий: один понятный призыв к действию, адаптивность и доступная форма."),
@@ -179,7 +180,7 @@ class Engine:
         if any(m["project_id"] != task["project_id"] for m in materials):
             raise ValueError("Материал принадлежит другому проекту")
         project = self.store.get("projects", task["project_id"])
-        return {"instructions_md": self.store.get("profiles", stage["agent_id"])["instructions_md"], "project": {"id": project["id"], "name": project["name"], "context": project["context"] if "project_context" in member["tools"] else None}, "task": {"id": task["id"], "goal": task["goal"], "completion": task["completion"]}, "stage": {"name": stage["name"], "expected_result": stage["output_title"]}, "materials": [{"id": m["id"], "title": m["title"], "content": m["content"]} for m in materials], "allowed_tools": [t for t in member["tools"] if any(x["id"] == t and x["connected"] for x in TOOLS)]}
+        return {"instructions_md": self.store.get("profiles", stage["agent_id"])["instructions_md"], "project": {"id": project["id"], "name": project["name"], "context": project["context"] if "project_context" in member["tools"] else None}, "task": {"id": task["id"], "goal": task["goal"], "completion": task["completion"]}, "stage": {"name": stage["name"], "expected_result": stage["output_title"]}, "materials": [selected_material(m) for m in materials], "allowed_tools": [t for t in member["tools"] if any(x["id"] == t and x["connected"] for x in TOOLS)]}
 
     async def next(self, task_id, approved=False, scheduled=False):
         lock = self.locks.setdefault(task_id, asyncio.Lock())

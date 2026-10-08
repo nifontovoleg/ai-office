@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import re
 from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Literal
@@ -28,6 +29,7 @@ class InputBody(BaseModel):
 from .store import ROOT, DATA_DIR, Store, TOOLS, now, uid
 from .runtime import Engine, model_config
 from .localization import localized_profile
+from .attachments import PREVIEW_MIME_TYPES, attachment_path, content_disposition, sniff_mime, upload_material, validate_link
 
 
 class ProjectBody(InputBody):
@@ -64,6 +66,16 @@ class MaterialBody(InputBody):
     content: str = Field(min_length=1, max_length=100000)
 
 
+class LinkBody(InputBody):
+    title: str = Field(min_length=1, max_length=200)
+    url: str = Field(min_length=1, max_length=4096)
+
+    @field_validator("url")
+    @classmethod
+    def safe_url(cls, value):
+        return validate_link(value)
+
+
 class ModeBody(InputBody):
     mode: Literal["demo", "model"]
 
@@ -85,6 +97,7 @@ def create_app(store=None):
     if fresh_default:
         database.add_all_profiles("project-main")
     engine = Engine(database)
+    extraction_slots = asyncio.Semaphore(2)
     for project in database.rows("projects"):
         engine.ensure_demo(project["id"])
     # Recover interrupted stages without silently resuming paid provider calls.
@@ -120,7 +133,9 @@ def create_app(store=None):
         if origin and origin not in allowed:
             return JSONResponse(status_code=403, content={"detail": "Запрос с этого Origin запрещён для локального офиса"})
         if request.method in ("POST", "PUT", "PATCH") and request.url.path.startswith("/api/"):
-            if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/json":
+            content_type = request.headers.get("content-type", "").split(";")[0].strip().lower()
+            file_upload = request.method == "POST" and re.fullmatch(r"/api/projects/[^/]+/materials/upload", request.url.path) and content_type == "application/octet-stream"
+            if content_type != "application/json" and not file_upload:
                 return JSONResponse(status_code=415, content={"detail": "API принимает application/json"})
         return await call_next(request)
 
@@ -226,9 +241,59 @@ def create_app(store=None):
     def create_material(project_id: str, body: MaterialBody):
         database.get("projects", project_id)
         material = {"id": uid("mat"), "project_id": project_id, "task_id": None, "title": body.title, "content": body.content, "kind": "source", "example": False, "created_at": now(), "agent_id": None}
-        database.save("materials", material)
-        database.emit(project_id, "material_added", "Добавлен исходный материал: " + body.title, material_id=material["id"])
-        return material
+        return database.add_source_material(material)[0]
+
+    @app.post("/api/projects/{project_id}/materials/upload")
+    async def upload_file(project_id: str, request: Request, filename: str = Query(min_length=1, max_length=200)):
+        if request.headers.get("content-type", "").split(";")[0].strip().lower() != "application/octet-stream":
+            raise HTTPException(415, "Загрузка файла принимает application/octet-stream")
+        return await upload_material(database, project_id, request, filename, extraction_slots)
+
+    @app.post("/api/projects/{project_id}/materials/link")
+    def add_link(project_id: str, body: LinkBody):
+        try:
+            database.get("projects", project_id)
+        except ValueError:
+            raise HTTPException(404, "Проект не найден") from None
+        title = body.title.strip()
+        material = {"id": uid("mat"), "project_id": project_id, "task_id": None, "title": title,
+                    "content": f"Ссылка: {body.url}\n\nНазвание: {title}\n\nСохранён адрес источника. Содержимое страницы не загружалось и не проверялось; для анализа добавьте нужный текст или файл отдельно.",
+                    "kind": "source", "example": False, "created_at": now(), "agent_id": None,
+                    "source_url": body.url}
+        return database.add_source_material(material)[0]
+
+    def scoped_file(project_id, material_id):
+        try:
+            database.get("projects", project_id)
+            material = database.get("materials", material_id)
+        except ValueError:
+            raise HTTPException(404, "Материал не найден") from None
+        if material["project_id"] != project_id:
+            raise HTTPException(404, "Материал не найден")
+        return material, attachment_path(database, material)
+
+    @app.get("/api/projects/{project_id}/materials/{material_id}/file")
+    def original_file(project_id: str, material_id: str):
+        material, path = scoped_file(project_id, material_id)
+        attachment = material["attachment"]
+        return FileResponse(path, media_type=attachment["mime_type"], headers={
+            "Content-Disposition": content_disposition(attachment["filename"]),
+            "X-Content-Type-Options": "nosniff", "Cache-Control": "no-store",
+            "Cross-Origin-Resource-Policy": "same-origin",
+        })
+
+    @app.get("/api/projects/{project_id}/materials/{material_id}/preview")
+    def preview_file(project_id: str, material_id: str):
+        material, path = scoped_file(project_id, material_id)
+        attachment = material["attachment"]
+        mime_type = sniff_mime(path, attachment["filename"])
+        if mime_type not in PREVIEW_MIME_TYPES or mime_type != attachment["mime_type"]:
+            raise HTTPException(415, "Предпросмотр доступен только для безопасных изображений, видео и аудио")
+        return FileResponse(path, media_type=mime_type, headers={
+            "Content-Disposition": content_disposition(attachment["filename"], "inline"),
+            "X-Content-Type-Options": "nosniff", "Cache-Control": "no-store",
+            "Cross-Origin-Resource-Policy": "same-origin",
+        })
 
     @app.get("/api/materials/{material_id}/download")
     def download_material(material_id: str):

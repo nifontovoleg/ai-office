@@ -15,13 +15,16 @@ AI Office is intended for one local OS user, with the API bound to `127.0.0.1`. 
 - Sanitized provider errors and explicit separation of demo/model execution.
 - Restricted Codex text-stage subprocesses with saved ChatGPT login, stdin context and no API credentials in the child environment.
 - Static-path filtering and attachment-based material downloads.
+- Project-scoped, generated-ID original files; 50 MiB streaming bounds, duplicate-safe persistence and cleanup of failed uploads.
+- Separate bounded PDF/DOCX/text parsing, stripped child credentials and timeout/process cleanup.
+- Signature-checked media previews, active-format download-only handling, `nosniff` and URL references without remote fetches.
 - Loopback Docker publication and a non-root container runtime configuration.
 
 Detailed executable evidence is in [tests/SECURITY_REVIEW.md](tests/SECURITY_REVIEW.md).
 
 ## Data handling
 
-SQLite project data and optional `.env` are plaintext files protected by the OS user's permissions. The application does not encrypt them at rest or implement retention/DSAR controls. Stop the server before backing up `data/`. Git and archive packaging exclude local data and secrets.
+SQLite project data, original uploads in `data/attachments/`, and optional `.env` are plaintext files protected by the OS user's permissions. The application does not encrypt them at rest or implement retention/DSAR controls. Stop the server before backing up the complete `OFFICE_DATA_DIR` (default `data/`). Git and archive packaging exclude local data, uploads and secrets. File parsers have bounded subprocess resources; they are not an OS sandbox for untrusted tenants. Uploaded code is treated as text and never executed.
 
 Codex and OpenCode maintain their own saved login outside this repository. Do not copy their authentication files into source, `.env`, archives or chat. Interactive coding sessions use the owner's selected project and CLI permissions; they remain separate from restricted office text stages.
 

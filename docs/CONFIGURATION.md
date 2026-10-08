@@ -22,7 +22,7 @@ Copy `.env.example` to `.env` when configuring a provider. Keep `.env` out of Gi
 | `OFFICE_CODEX_TIMEOUT_SECONDS` | `300` | Codex stage timeout, `30..1800` seconds |
 | `OFFICE_MODEL_MAX_TOKENS` | `8192` | Anthropic output limit, `128..128000`; not sent to Chat Completions |
 | `OFFICE_MODEL_TIMEOUT_SECONDS` | `120` | HTTP timeout in seconds, `1..600` |
-| `OFFICE_DATA_DIR` | `./data` | Directory containing `office.db` |
+| `OFFICE_DATA_DIR` | `./data` | Directory containing `office.db` and original files under `attachments/`; back up both together |
 | `OFFICE_CATALOG_DIR` | `./catalog` | Directory containing source catalog and profiles |
 | `OFFICE_ALLOWED_ORIGINS` | Built-in localhost origins | Additional comma-separated allowed origins; does not change allowed Host values |
 | `OFFICE_URL` | `http://127.0.0.1:4197` | Browser test target only |

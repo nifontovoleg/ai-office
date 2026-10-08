@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add project files and HTTP/HTTPS references during creation and later in Settings/Knowledge base, with Russian examples and persistent field hints.
+- Extract bounded PDF/DOCX/text requirements, retain exact originals, show signature-checked media previews and expose source selection to permitted task stages.
+- Preserve successful uploads on partial failures; retry remaining entries without duplicating the project or saved files.
+- Add upload/parser/permission security regressions and real browser coverage for documents, playable media, retries and narrow accessible forms.
+
 - Make saved-ChatGPT Codex CLI the primary local model workflow and keep Claude/OpenAI API presets as alternatives.
 - Add restricted Codex text-stage execution, safe JSON/usage handling and separate interactive Codex/OpenCode launch instructions.
 - Add OpenCode ChatGPT-login mode with a live model picker, keeping API-key presets optional.

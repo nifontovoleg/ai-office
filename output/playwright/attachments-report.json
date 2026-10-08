@@ -1,0 +1,63 @@
+{
+  "started": "2026-10-08T09:46:30.179Z",
+  "checks": [
+    "Axe new project with persistent hints",
+    "Axe new project with files and reference",
+    "New project stores PDF, Russian DOCX, photo, playable video, arbitrary binary and URL",
+    "Axe document text and original download",
+    "Axe image reference preview",
+    "Original photo renders and MP4 is decoded by the actual browser",
+    "Axe saved project settings",
+    "Files added later in settings persist across reload with the project context",
+    "Knowledge upload form saves a typed URL even without a separate Add click",
+    "Saving files preserves a pending text draft and completes both materials once",
+    "Saving text preserves queued files and completes both materials once",
+    "Task creation exposes source attachment selection and extraction status",
+    "Axe partial upload with clear recovery",
+    "Partial upload recovers without duplicate project or already saved file; close warns",
+    "Client limit explains oversize file and allows removal before project creation",
+    "Axe new project at 320 pixels",
+    "Axe settings at 320 pixels",
+    "Creation and settings fit 320px and retain keyboard-accessible controls"
+  ],
+  "accessibility": [
+    {
+      "name": "new project with persistent hints",
+      "violations": []
+    },
+    {
+      "name": "new project with files and reference",
+      "violations": []
+    },
+    {
+      "name": "document text and original download",
+      "violations": []
+    },
+    {
+      "name": "image reference preview",
+      "violations": []
+    },
+    {
+      "name": "saved project settings",
+      "violations": []
+    },
+    {
+      "name": "partial upload with clear recovery",
+      "violations": []
+    },
+    {
+      "name": "new project at 320 pixels",
+      "violations": []
+    },
+    {
+      "name": "settings at 320 pixels",
+      "violations": []
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "12-new-project-materials.png",
+    "13-project-settings-materials.png"
+  ],
+  "status": "passed"
+}

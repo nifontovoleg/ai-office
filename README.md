@@ -16,8 +16,8 @@
   <img src="https://img.shields.io/badge/Scope-Local%20MVP-14B8A6?style=flat-square&amp;labelColor=555555" alt="Local MVP" />
   <img src="https://img.shields.io/badge/Repository-Private-181717?style=flat-square&amp;labelColor=555555&amp;logo=github&amp;logoColor=white" alt="Private repository" />
   <br />
-  <img src="https://img.shields.io/badge/Backend%20tests-84%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="84 backend tests passed" />
-  <img src="https://img.shields.io/badge/Browser%20checks-42%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="42 browser checks passed" />
+  <img src="https://img.shields.io/badge/Backend%20tests-106%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="106 backend tests passed" />
+  <img src="https://img.shields.io/badge/Browser%20checks-60%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="60 browser checks passed" />
   <a href="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml"><img src="https://github.com/nifontovoleg/ai-office/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI workflow status" /></a>
 
   <p><a href="#quick-start">Quick start</a> · <a href="#start-with-codex-and-opencode">Connect models</a> · <a href="#screenshots">Screenshots</a> · <a href="docs/ARCHITECTURE.md">Architecture</a> · <a href="docs/API.md">API</a> · <a href="docs/TESTING.md">Testing</a></p>
@@ -51,10 +51,15 @@ The catalog, project team, and task executors are separate. Adding 282 roles to 
 | **Explicit handoffs** | A stage consumes permitted project materials and the previous result, then stores its own output |
 | **Owner decisions** | Per-stage confirmation and final acceptance or revision |
 | **Persistent history** | SQLite projects, membership, tasks, materials, settings, run history, and unique events |
+| **Client briefs and files** | Multi-file uploads and URLs at creation or later; bounded PDF/DOCX/text extraction, original downloads and supported media previews |
 | **Live events** | Server-sent events with sequence cursors, reconnect snapshots, replay, and client deduplication |
 | **Controlled execution** | Demo adapter by default; optional model adapter; permission rechecks, cancellation, and restart recovery |
 
 ## Screenshots
+
+Project names/context have examples and persistent hints. Add a client brief under **New project → Brief and materials**, or later in **Settings / Knowledge base**. Originals up to 50 MiB are saved locally; readable PDF, DOCX and text files expose extracted requirements to explicitly selected task sources. Images/videos remain file references for text stages, and URL content is not fetched. See the complete [project materials guide](docs/ATTACHMENTS.md).
+
+<img src="docs/screenshots/new-project.png" alt="Russian project dialog with name/context examples, a client brief file area and reference links" width="600" />
 
 ### Full office: 282 participants and 18 departments
 
@@ -310,23 +315,25 @@ npm run build
 npm run test:e2e
 npm run test:all-agents
 npm run test:localization
+npm run test:attachments
 ```
 
 Run browser tests against a running server. They create separate QA projects and exercise the primary demo; use an isolated `OFFICE_DATA_DIR` for repeated testing.
 
 | Evidence | Recorded result |
 | --- | --- |
-| Backend unit, integration, and security contracts | 84 passed, including Codex, provider and Russian-presentation regressions |
+| Backend unit, integration, and security contracts | 106 passed, including 22 attachment/parser regressions |
 | Real Codex text-stage smoke | Passed with saved ChatGPT login and CLI default model; reported token usage captured |
 | Real OpenCode Big Pickle smoke | Passed through the public free endpoint; CLI-reported cost zero |
 | Original browser flow | 20 passed |
 | Complete 282-member browser flow | 15 passed |
 | Russian presentation browser regressions | 7 passed |
-| Automated accessibility | Eleven checked states; zero violations |
+| Project files/links browser flow | 18 passed |
+| Automated accessibility | Nineteen checked states; zero violations |
 | Dependency audits | Zero known npm and Python vulnerabilities in the recorded audit |
 | Responsive layout | Desktop 1440 px and mobile 390 / 320 px checked |
 
-The Codex/OpenCode update reran backend/build checks; browser and accessibility results are from the earlier full UI validation. Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend tests, empty-key provider checks, documentation/publication checks, dependency audits, and Compose configuration on GitHub. Browser checks are reproducible locally; see [testing](docs/TESTING.md).
+The materials update reran all backend/build checks and four browser suites on an isolated local server with models disabled. Current logs and limitations are in [VALIDATION.md](VALIDATION.md). The [CI workflow](.github/workflows/ci.yml) runs the build, backend/browser tests, empty-key provider checks, documentation/publication checks, dependency audits, and Compose configuration on GitHub. Browser checks use installed Chromium in CI and Edge locally; see [testing](docs/TESTING.md) for FFmpeg, Python and isolated-server requirements.
 
 ## Project structure
 

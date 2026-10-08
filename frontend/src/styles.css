@@ -527,9 +527,9 @@ button.stage-item:hover .stage-info strong { color: #f6adbd; }
 .field > small { font-weight: 400; }
 .modal, .drawer { padding: 0; color: var(--text); }
 dialog::backdrop { background: #02070ecc; backdrop-filter: blur(4px); }
-dialog.modal { margin: auto; }
+dialog.modal { position: fixed; inset: 0; height: fit-content; margin: auto; max-height: calc(100dvh - 48px); }
 dialog.modal > form { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: hidden; }
-.modal-body { flex: 1; }
+.modal-body { flex: 1; overscroll-behavior: contain; }
 .modal-header, .modal-footer, .drawer-header { flex-shrink: 0; }
 dialog.drawer { position: fixed; margin: 0; inset: 0 0 0 auto; height: 100dvh; max-height: 100dvh; max-width: 100vw; }
 .drawer-body .drawer-tabs { margin: 18px -23px 22px; padding: 0 23px; }
@@ -803,6 +803,7 @@ details p { margin-top: 8px; }
   .check-item { min-height: 44px; font-size: 13px; }
   .modal-backdrop { padding: 12px; }
   .modal { max-height: calc(100dvh - 24px); border-radius: 10px; }
+  dialog.modal { max-height: calc(100dvh - 24px); }
   .modal-header, .drawer-header { padding: 18px 16px; }
   .modal-header h2, .drawer-header h2 { font-size: 18px; }
   .modal-header button, .drawer-header button { width: 38px; height: 38px; }
@@ -879,4 +880,68 @@ details p { margin-top: 8px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+
+/* Project documents share the existing form layout in creation, settings and knowledge. */
+.form-fields { min-width: 0; margin: 0; padding: 0; border: 0; }
+.form-fields:disabled { opacity: .78; }
+.field > label { margin: 0; }
+.field > textarea::placeholder { color: #91a3ba; }
+dialog.modal { max-width: calc(100vw - 24px); }
+.attachments-block { min-width: 0; margin: 24px 0 20px; padding-top: 20px; border-top: 1px solid var(--line); }
+.attachments-block h3 { font-size: 15px; margin: 0 0 8px; }
+.attachments-block h4 { margin-top: 20px; }
+.attachment-hint, .section-panel .attachment-hint { color: #aebdd0; font-size: 11px; font-weight: 400; line-height: 1.65; margin: 0 0 15px; }
+.attachment-drop { display: flex; align-items: center; flex-direction: column; gap: 9px; min-width: 0; padding: 18px 16px; margin-bottom: 12px; background: #0b1522; border: 1px dashed #526078; border-radius: 8px; text-align: center; }
+.attachment-drop.is-dragging { background: #222a37; border-color: var(--accent); }
+.attachment-drop > svg { color: var(--accent); }
+.attachment-drop strong { font-size: 13px; }
+.attachment-drop > span, .attachment-drop > small { max-width: 100%; color: #aebdd0; font-size: 11px; line-height: 1.6; }
+.attachment-drop .btn { min-height: 44px; }
+.attachment-link-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 12px; }
+.attachment-link-row > .field { flex: 1; margin-bottom: 0; }
+.attachment-link-row > .btn { min-height: 40px; flex-shrink: 0; }
+.attachment-list { list-style: none; padding: 0; margin: 16px 0; }
+.attachment-item { display: flex; align-items: flex-start; gap: 10px; min-width: 0; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+.attachment-item > svg, .attachment-item > span > svg { color: #a5b9d2; margin-top: 3px; flex-shrink: 0; }
+.attachment-item-copy { flex: 1; min-width: 0; }
+.attachment-item-copy strong, .attachment-open { display: block; font-size: 12px; line-height: 1.6; font-weight: 500; overflow-wrap: anywhere; }
+.attachment-item-copy small { display: block; color: #aebdd0; font-size: 11px; line-height: 1.7; overflow-wrap: anywhere; }
+.attachment-item-copy > a { display: block; color: #f2a895; font-size: 11px; line-height: 1.65; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.attachment-item-copy > a svg { display: inline; vertical-align: middle; margin-left: 5px; }
+.attachment-item .icon-btn { flex-shrink: 0; min-width: 40px; min-height: 40px; }
+.attachment-open { text-align: left; color: #e0eaf8; text-decoration: underline; text-underline-offset: 3px; min-height: 32px; }
+.attachment-item-copy .attachment-status { display: flex; align-items: baseline; gap: 4px; margin-top: 4px; }
+.attachment-status.saved { color: #9cceb6; }
+.attachment-status.error, .attachment-error { color: #ffc0ac; }
+.attachment-status.uploading { color: #f2bd9e; }
+.attachment-status svg { flex-shrink: 0; align-self: center; }
+.attachment-error { font-size: 12px; line-height: 1.65; margin-bottom: 16px; }
+.attachment-summary { color: #c6d7eb; font-size: 12px; line-height: 1.7; padding: 10px 12px; border-radius: 6px; background: #192638; }
+.attachment-details { padding: 14px; border: 1px solid var(--line); border-radius: 8px; margin: 18px 0; overflow-wrap: anywhere; }
+.attachment-details strong { display: block; font-size: 13px; }
+.attachment-details span { display: block; margin-top: 5px; color: #aebdd0; font-size: 11px; }
+.attachment-details p { margin: 10px 0 0; font-size: 12px; line-height: 1.7; color: #c6d7eb; }
+.material-image-preview { display: block; width: 100%; height: auto; max-height: 400px; object-fit: contain; background: #0b1522; border: 1px solid var(--line); border-radius: 8px; margin: 16px 0; }
+.material-media-preview { display: block; width: 100%; max-width: 100%; max-height: 400px; margin: 16px 0; }
+.original-download { margin: 0 0 18px; }
+.source-link-panel { padding: 14px; margin: 16px 0; border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.source-link-panel a { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #f2a895; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.source-link-panel a span { display: block; width: 100%; font-size: 11px; overflow-wrap: anywhere; }
+.source-link-panel p { margin-top: 10px; margin-bottom: 0; line-height: 1.65; }
+.material-form-tabs { display: flex; gap: 6px; margin-bottom: 20px; border-bottom: 1px solid var(--line); }
+.material-form-tabs button { min-height: 44px; padding: 9px 13px; color: #aebdd0; font-size: 12px; border-bottom: 2px solid transparent; }
+.material-form-tabs button.active { border-bottom-color: var(--accent); color: #f3c8ba; }
+.material-form-tabs + .attachments-block { margin-top: 0; padding-top: 0; border-top: 0; }
+.spin { animation: attachment-spin 1s linear infinite; }
+@keyframes attachment-spin { to { transform: rotate(360deg); } }
+@media (max-width: 700px) {
+  .attachment-link-row { flex-direction: column; align-items: stretch; }
+  .attachment-link-row > .btn { align-self: flex-start; min-height: 44px; }
+  .attachment-drop { padding: 16px 12px; }
+  .attachments-block h3 { font-size: 15px; }
+  .attachment-hint, .section-panel .attachment-hint, .attachment-item-copy small { font-size: 12px; }
+  .attachment-item-copy strong, .attachment-open { font-size: 13px; }
+  .attachment-item .icon-btn { min-width: 44px; min-height: 44px; }
+  .modal-footer .btn { white-space: normal; }
 }

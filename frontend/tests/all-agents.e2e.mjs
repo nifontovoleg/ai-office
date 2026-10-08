@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 const output=fileURLToPath(new URL('../../output/playwright/',import.meta.url));
 await mkdir(output,{recursive:true});
 const base=process.env.OFFICE_URL||'http://127.0.0.1:4197';
-const browser=await chromium.launch({channel:process.env.OFFICE_BROWSER||'msedge',headless:true});
+const browser=await chromium.launch({channel:process.env.OFFICE_BROWSER==='chromium'?undefined:process.env.OFFICE_BROWSER||'msedge',headless:true});
 const context=await browser.newContext({viewport:{width:1440,height:1000},reducedMotion:'reduce'});
 const page=await context.newPage();
 const report={checks:[],accessibility:[],errors:[]};
