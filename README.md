@@ -388,10 +388,12 @@ The model adapter has transport-level test coverage, and a real Codex text respo
 - Add database migration/versioning and configurable retention before long-lived shared use.
 - Add manual screen-reader testing and user research beyond automated accessibility checks.
 
-## Author and access
+## Author and Access
 
 **Oleg Nifontov** · [@nifontovoleg](https://github.com/nifontovoleg)
 
-This repository is private. No open-source license is granted by this repository. The supplied third-party catalog and reference material retain their original rights; see [third-party notices](THIRD_PARTY_NOTICES.md).
+This repository is publicly visible as part of my portfolio. No license is granted to use, copy, modify, or distribute this code: all rights reserved. If you'd like to use the project or discuss a similar build, feel free to https://t.me/olegugfv_reg59.
+
+Third-party catalogs and reference materials retain their original rights and licenses; see the [third-party notices](THIRD_PARTY_NOTICES.md).
 
 <div align="center"><a href="#top">Back to top</a></div>
