@@ -14,7 +14,7 @@
   <img src="https://img.shields.io/badge/Departments-18-6366F1?style=flat-square&amp;labelColor=555555" alt="18 departments" />
   <img src="https://img.shields.io/badge/UI-Russian-EC8C9C?style=flat-square&amp;labelColor=555555" alt="Russian user interface" />
   <img src="https://img.shields.io/badge/Scope-Local%20MVP-14B8A6?style=flat-square&amp;labelColor=555555" alt="Local MVP" />
-  <img src="https://img.shields.io/badge/Repository-Private-181717?style=flat-square&amp;labelColor=555555&amp;logo=github&amp;logoColor=white" alt="Private repository" />
+  <img src="https://img.shields.io/badge/Repository-Public-22C55E?style=flat-square&amp;labelColor=555555&amp;logo=github&amp;logoColor=white" alt="Public repository" />
   <br />
   <img src="https://img.shields.io/badge/Backend%20tests-106%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="106 backend tests passed" />
   <img src="https://img.shields.io/badge/Browser%20checks-60%20passed-22C55E?style=flat-square&amp;labelColor=555555" alt="60 browser checks passed" />
